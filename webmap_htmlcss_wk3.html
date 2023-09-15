@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- set encoding system-->
+        <meta charset="utf-8">
+
+        <!-- external style, calls a CSS file-->
+        <link rel="stylesheet" type="text/css" href="CSS_Lab1.css">
+
+        <!-- internal style-->
+        <style>
+            
+                        /* format everything use asterix 
+            this is universal internal styling*/
+            * {background-color: #eee5c0;}
+
+            /* how to set declaration for id */
+            /* Declaration are property:value with ; */
+            
+            /* selector by tag
+            headers are default bold*/
+            h1 {text-align: center}
+
+            h2 {font-size: 50}
+
+            /* selector by id */
+            #red {
+                color: red; font-weight: bold;
+            }
+            /* selector by  class */
+            .center {
+                test-align: center;
+                color: red;
+            }
+
+            /* hierachy, not separated by commas. will only apply to li inside ul ol. */
+            ul ol li {font-family: Arial, sans-serif; color:blue;}
+
+            /* cannot have hierachy of different selectors */
+            #one .nametag {font-size:100}
+
+        </style>
+    </head>
+
+    <body>
+        <!-- how to call by id -->
+        <p id = "id"> test </p>
+        <br>
+        <h1 class = "center"></h1>
+        <!-- call by tag-->
+        <h1>call by tag</h1>
+        <!-- call by class-->
+        <p class = "center"> call by class</p>
+
+        <ul> <!-- unordered list-->
+            <li> unordered list item 1</li>       
+            <ol>
+                <li> Ordered list item 1</li>
+            </ol>
+        </ul>
+
+        <li> list tag outside</li>
+
+        <!-- Definition list-->
+        <dl>
+            <dt> Definition term </dt>
+                <dd> Defitinition</dd>
+        </dl>
+
+        
+    </body>
+
+</html>

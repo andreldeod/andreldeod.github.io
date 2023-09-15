@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<!-- 
+Adapted from CodePen: https://codepen.io/vinay-khatri/pen/LYdyoNZ  
+Original author: Vinay Khatri
+Edited by: J. P. Ocón
+Edited for IDCE 30262 - Web Mapping & Open Source GIS, Week 3
+September 15, 2023
+-->
+
+<html>
+	<head>
+		
+		<!-- Setting the encoding to UTF-8 -->
+		<meta charset='UTF-8'>
+		<title></title>
+		
+		<!-- Internal CSS styling instead of external CSS file -->
+		<style id="INLINE_PEN_STYLESHEET_ID">
+			* {
+			margin: 0px;
+			padding: 0px;
+			box-sizing: border-box;
+			}
+			
+			.center {text-align: center;}
+
+			body {
+			font-family: Georgia, "Times New Roman", Times, serif;
+			color: white;
+			/* background color changed to black*/
+			background-color: rgb(0, 0, 0);
+			}
+			
+			.container {
+			max-width: 90rem;
+			margin: 2rem auto;
+			padding: 0px 2rem;
+			}
+
+			/* Added class that flips image */
+			.img-flip {
+				max-width: 100%;
+				transform: scaleX(-1), rotateY(180deg)
+			}
+			
+			.img-fluid {
+			max-width: 100%;
+			transform: scaleX(-1);
+			}
+			
+			.logo img {
+			width: 70px;
+			height: 70px;
+			border-radius: 41px;
+			outline: 4px solid red;
+			}
+			
+			nav {
+			display: flex;
+			justify-content: space-between;
+			padding: 1rem 3rem;
+			align-items: center;
+			}
+			
+			/* decreased gap size between items */
+			.items {
+			display: flex;
+			align-items: center;
+			gap: 50px;
+			}
+			
+			.items a:link {
+			text-decoration: none;
+			color: white;
+			font-size: 1.5rem;
+			font-weight: bold;
+			}
+			
+			.items a:visited {
+			text-decoration: none;
+			color: white;
+			font-size: 1.5rem;
+			font-weight: bold;
+			}
+			
+			.items a:hover {
+				/* hover of links turned from green to red */
+			color: red;
+			}
+			
+			.active {
+			color: red !important;
+			}
+			
+			.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			justify-content: center;
+			align-items: center;
+			}
+			
+			.info {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			}
+			
+			/* made font size of short-info class 3.5rem instead of 4 rem, so first line fit all in one line. this was not necessary but i thought it looked better*/
+			.short-info {
+			color: white;
+			font-size: 3.5rem;
+			margin-bottom: 0.9rem;
+			}
+			
+			.hero-heading {
+			font-size: 3rem;
+			margin-bottom: 0.3rem;
+			}
+			
+			.hero-sub-heading {
+			font-size: 2rem;
+			opacity: 0.7;
+			}
+			
+			.users {
+			display: flex;
+			align-items: center;
+			margin: 1rem 0px;
+			gap:10px;
+			}
+			
+			.user {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			border: 2px solid red;
+			}
+			
+			.learn-more {
+			align-self: start;
+			margin-top: 3rem;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<nav>
+			
+				<div class="logo">
+					<img src="https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80">
+				</div>
+				
+				<div class="items">
+					<a href="#" class="active">Home</a>
+					<a href="#">Service</a>
+					<a href="#">About</a>
+					<a href="#">Contact</a>
+					<a href="#">Blog</a>
+				</div>
+				
+			</nav>
+		</header>
+	
+		<!-- Main Section Begins -->
+	
+		<section>
+			<div class="container">
+				<div class="row">
+					<div class="info">
+						<!-- made font size of short-info class smaller, so first line fit all in one line-->
+						<p class="short-info">Testing your knowledge of </p>
+						<p class="short-info">HTML & </p>
+						<h2 class="hero-heading"> ~Cascading Style Sheets~</h2> 
+						<!-- Added two breaks ton increase gaps between h2 and next paragraph-->
+						<br>
+						<br>
+						
+
+						<p class="hero-sub-heading">Using all resources available to you (i.e., slides, cheat sheets, the web), work through the assessment to fix this code to look like the example.</p>
+
+
+						<!-- Added two breaks ton increase gaps between h2 and next paragraph-->
+						<br>
+						<br>
+					
+						<div id ="users">
+							<img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NTg0MTM4Nzk&ixlib=rb-1.2.1&q=80" class="img-fluid user">
+							<img src="https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NTg0MTM4Nzk&ixlib=rb-1.2.1&q=80" class="img-fluid user">
+							<img src="https://images.unsplash.com/photo-1522556189639-b150ed9c4330?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NTg0MTM4Nzk&ixlib=rb-1.2.1&q=80" class="img-fluid user">
+							<img src="https://images.unsplash.com/photo-1534614971-6be99a7a3ffd?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NTg0MTM4Nzk&ixlib=rb-1.2.1&q=80" class="img-fluid user">
+							<!-- Removed paragraph tags so that images and text is on the same line-->
+							Only 3 weeks in and look at your progress!
+						</div>
+						
+					</div>
+					
+					<div>
+						<!-- Added class that flips image -->
+						<img src="https://i.pinimg.com/originals/89/87/51/8987513302da384468e8896e04ca4bf8.png" class="img-flip">
+					</div>
+				
+				</div>
+			</div>
+		</section>
+		
+		<!-- Main Section Ends -->
+
+	</body>
+</html>
