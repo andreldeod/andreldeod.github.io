@@ -1,0 +1,64 @@
+/*Q2: Copy code from a site you like, edit it accordingly to fit your needs (0.5 pts) [see mexico_style.css]*/
+/* Source: https://dev.to/codecustard/creating-an-interactive-map-of-the-us-b5o */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+
+/* Set the color for Mexico's capital */
+#MX-DIF {
+    fill: rgb(211, 23, 23) !important;
+}
+
+/* Change the fill color to yellow when "MX-DIF" is hovered */
+#MX-DIF:hover {
+    fill: #ffee00 !important; 
+}
+
+
+/* Color of states*/
+path {
+    stroke: white;
+    fill:rgb(133, 101, 44) !important;
+    transition: fill .4s ease;
+}
+
+/* Color of Mexican states when hovered*/
+path:hover {
+    fill: rgb(59, 114, 46) !important;
+}
+
+/* Center map */
+#mex-map {
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        width: 100%;
+        height: 100%;   
+}
+
+/* Style for state labels */
+#details-box {
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 24px;
+    position: fixed;
+    color: white;
+    font-family: "Poppins";
+    background-color: rgba(0, 0, 0, 0.65); /* 65% transparent black */
+    width: fit-content;
+    transform: translateX(-50%);
+    transition: opacity .4s ease;
+    z-index: 1;
+}
+
+
+/* Define different zoom levels using CSS classes */
+.zoom-level-1 {
+    transform: scale(1);
+    transition: transform 0.4s ease;
+}
+
+.zoom-level-2 {
+    transform: scale(2);
+    transition: transform 0.4s ease;
+}

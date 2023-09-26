@@ -36,13 +36,71 @@
             /* hierachy, not separated by commas. will only apply to li inside ul ol. */
             ul ol li {font-family: Arial, sans-serif; color:blue;}
 
-            /* cannot have hierachy of different selectors */
-            #one .nametag {font-size:100}
+            /* can have hierachy of different selectors */
+            
+            #one .nametag {font-size:100px}
 
+            #uno .sleepy p {text-decoration: line-through;}
+
+            #um #feline .fuzz {font-style: italics}
+
+            .meow .mid {color:rgb(162, 34, 179); text-align: center; font-weight: bold}
+
+            .meow .mid .big {color:rgb(14, 141, 52); text-align: center; font-weight: bold; font-size: 50px}
         </style>
     </head>
 
     <body>
+
+        <!-- hierarchy of id class tag-->
+        <div id="uno">
+            <div class="sleepy">
+                <p> sleepy cat</p>
+                not sleepy cat
+            </div>
+        </div>
+
+
+
+
+        <!-- class nested in id-->
+        <div id="one">
+            <div class="nametag">
+                REALLY BIG CAT
+            </div>
+        </div>
+
+        <!-- Element can have several classes but only one id-->
+        <div id="um">
+            <div id="feline">
+                <div class="fuzz"> fuzzy cat</div>
+            </div>
+        </div>
+
+
+
+        <!-- 3 class hierarchy-->
+        <div class="meow">
+            <div class="mid">
+              <div class="big">
+                big green cat
+              </div>
+            </div>
+        </div>
+
+        <!-- not all tags can have hierachy. this has 2 hierearchy but not 3 -->
+        <dl class="meow">
+            <dt class="mid"> mid pink cat
+                <dd class="big"> meow big </dd>
+            </dt>
+        </dl>
+        <br>
+
+        <!-- p tags cant be nested inside p tags-->
+        <p class = "meow"><p class = "mid"> meow center </p></p>
+
+
+
         <!-- how to call by id -->
         <p id = "id"> test </p>
         <br>
