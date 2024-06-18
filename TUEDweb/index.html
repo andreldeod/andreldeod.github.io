@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> TUED Participating Unions </title>
+        <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+        <script src='https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css' rel='stylesheet' />
+         
+        <!-- Spiderifier Stylesheet -->
+        <link href="https://cdn.jsdelivr.net/npm/mapboxgl-spiderifier@1.0.10/index.min.css" rel="stylesheet">
+
+        <!-- Spiderifier Script -->
+        <script src="https://cdn.jsdelivr.net/npm/mapboxgl-spiderifier@1.0.10/index.min.js"></script>
+
+        <!-- CSS Links -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <!--      <link href="site.css" id="site-style" rel="stylesheet"> -->
+
+        <!-- jQuery -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+        <!-- Bootstrap Bundle JS (Includes Popper) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+ 
+        <style>
+            /* Define a base font stack */
+            :root {
+                --base-font-family: Calibri, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            }
+
+            /* Apply the font family broadly */
+            html, body, .mapboxgl-popup-content, ul, li, .side-panel, .initial-panel {
+                font-family: var(--base-font-family);
+            }
+
+
+            html, body {
+                margin: 0; 
+                padding: 0;
+                background-color: #8f474e;
+                overflow-x: hidden; /* Prevents horizontal scroll */
+            }
+            #map {position: absolute; top: 50px; bottom: 0px; width: 100%;}
+
+     
+            
+            /*style map popups*/
+            .mapboxgl-popup-content {
+                pointer-events: auto;
+                border-radius: 4px;
+                box-shadow: none;
+                padding: 12px 16px;
+                color: #ffffff;
+                background-color: #252525;
+            }
+
+            /*popup bottom arrow color*/
+            .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+                border-top-color: black;
+            }
+
+            /* List item style */
+            ul {
+                list-style-type: disc; /* Default bullet style */
+                padding-left: 20px; /* Ensures indentation of bullets */
+                margin-top: 0px; /* Spacing above the list */
+                margin-bottom: 0px; /* Spacing below the list */
+            }
+
+            li {
+                margin-bottom: 5px; /* Adds space between items */
+            }
+
+            /* Common styles for both panels */
+            .side-panel, .initial-panel {
+                position: absolute;
+                top: 0px;
+                right: 0;
+                width: 300px;
+                box-shadow: -3px 0 6px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 2000;
+                height: 100%;
+            }
+
+            .initial-panel {
+                background-color: #F4EEEE;
+            }
+
+            .side-panel {
+                background-color: white;
+            }
+
+            .side-panel-content, .initial-panel-content {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;  
+                padding: 20px;
+                padding-bottom: 0; 
+                box-sizing: border-box; 
+                overflow-y: auto;
+                }
+
+
+            /* Stock image for initial panel */
+            .full-width-image {
+                width: calc(100% + 40px);  
+                margin-left: -20px;  
+                margin-right: -20px; 
+                margin-top: 10px; 
+                height: auto;  
+                align-self: flex-end;
+                
+            }
+
+            .side-panel.open, .initial-panel.open {
+                transform: translateX(0);
+            }
+
+            /* Common style adjustments for headers and text within panels */
+            .side-panel h1, .initial-panel h1 {
+                color: #AA2130;
+                font-size: 30px;
+                font-family: 'Bitter', serif;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .side-panel p, .side-panel h2, .side-panel a, 
+            .initial-panel p, .initial-panel h2, .initial-panel a {
+                color: #3A3031;
+                margin-top: 0px;
+            }
+
+            /* Style for close button on pannels */
+            .close-panel {
+                cursor: pointer;
+                background: #3A3031;
+                border: none;
+                color: #474747;
+                padding: 10px 10px;
+                margin-top: 50px;
+                margin-bottom: -5px;
+            }
+
+            /* Style for union logos on side pannel */
+            #union-logo {
+                width: 100%;
+                height: auto;
+                margin-top: -15px;
+                margin-bottom: 8px;
+            }
+            
+            /* Style for top banner */
+            .header {
+                width: 100%;
+                height: 50px;
+                background-color: white;
+                padding: 5px 0px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                text-align: center;
+                position: fixed; /* Makes the header stay at the top when you scroll */
+                top: 0; /* Aligns the header at the very top of the page */
+                left: 0; /* Ensures it spans from the left edge */
+                z-index: 3000; /* Ensures it stays on top of other content */
+                border-bottom: 2px solid #3A3031; /* Adds a black line along the bottom */
+            }
+
+            /* Style for union photo on initial panel */
+            .union-photo {
+                width: 100%; /* Full width to use all available space */
+                height: auto; /* Maintain aspect ratio */
+                margin-top: 5px; /* Space from the last text */
+                margin-bottom: 10px;
+                border-top: 1px solid #ccc; /* Optional: adds a subtle separator */
+                border: 5px solid #4D5D48 ; /* #752626 */
+                box-sizing: border-box; /* Ensures border width is included in the width calculation */
+            }
+
+            
+            /* Adds a smooth transition effect to images inside <a> tags with class 'union-photo' */
+            a img.union-photo {
+                transition: transform 0.3s ease-in-out; /* Smooth transition for scale */
+            }
+
+            /* Scales the image slightly and changes the cursor on hover */
+            a img.union-photo:hover {
+                transform: scale(1.05); /* Slightly enlarges the image on hover */
+                cursor: pointer; /* Changes the cursor to indicate it's clickable */
+            }
+
+            /* Optional: Add styles for hover and active states */
+            .mapboxgl-ctrl-home:hover {
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+
+            .mapboxgl-ctrl-home:active {
+                background-color: rgba(255, 255, 255, 0.7);
+            }
+
+            /* Adjust placement of navigation controls*/
+            .mapboxgl-ctrl-top-left {
+                top: 15px !important; 
+            }
+
+            .navbar {
+            background-color: transparent !important;  /* Keeps the navbar transparent */
+            padding: 2px;
+        }
+
+        /* Making navbar buttons fully opaque */
+        .navbar .nav-link.dropdown-toggle {
+            background-color: #FFFFFF; /* Set a solid white background or any desired color */
+            opacity: 0.9 !important; /* Ensures the button is fully opaque */
+        }
+
+        /* Additional styling to ensure dropdown menus are visible against the navbar */
+        .dropdown-menu {
+            background-color: white; /* Ensure dropdown menus are also opaque if needed */
+            opacity: 0.9;
+        }
+            
+
+
+        </style>
+    </head>
+    <body>
+        <!-- TOP BANNER -->
+        <div class="header">
+            <a href="https://www.tuedglobal.org/" target="_blank">
+                <img src="TUEDlogo_layered_HORIZ.jpg" alt="TUED Logo" style="width: auto; height: 40px;"> <!-- Adjust width and height while maintaining aspect ratio -->
+            </a>
+        </div>
+        
+        <div id="map"></div>
+
+        <!-- SIDE PANEL WITH UNION INFO-->
+        <div id="side-panel" class="side-panel">
+            <div class="side-panel-content">
+                <button class="close-panel"> </button>
+                <h1 id="union-acronym"></h1>
+                <h2 id="union-name"></h2>
+                <img id="union-logo" src="" alt="Union Logo" />
+                <ul class="union-details" style="margin-top: 5px;">
+                    <li><strong>Jurisdiction:</strong> <span id="union-jurisdiction">N/A</span></li>
+                    <li><strong>Area of representation:</strong> <span id="union-area_of_representation">N/A</span></li>
+                    <li><strong>Region:</strong> <span id="union-region">N/A</span></li>
+                    <li><strong>Sector:</strong> <span id="union-sector">N/A</span></li>
+                </ul>
+                <p id="union-description" style="margin-top: 10px;"></p>
+                <a id="union-link" href="#" target="_blank" style="display: block; text-align: center;">Visit Website</a>
+            </div>
+        </div>
+
+        <!-- INITIAL PANEL WITH ABOUT INFO-->
+        <div id="initial-panel" class="initial-panel">
+            <div class="initial-panel-content">
+                <button class="close-panel">  </button>
+                <h1>PARTICIPATING UNIONS</h1>
+                <a href="https://drive.google.com/file/d/1pIGYWBP6dVubt59lXbEtlzVuuJPyNEcL/view?usp=sharing" target="_blank">
+                    <img src="groupPhoto.jpg" alt="Group Photo of Participating Unions" class="union-photo">
+                </a>              
+                <p><strong>Trade Unions for Energy Democracy (TUED) is a growing global network of unions working to advance democratic control and social ownership of energy, in ways that promote solutions to the climate crisis, address energy poverty, and resist the degradation of both land and people.</strong></p>
+                <ul>
+                    <li>Click on the points to learn more about individual unions.</li>
+                    <li>Countries in yellow have at least one participating union.</li>
+                    <li>For more info click <a href="https://www.tuedglobal.org/participating-unions-and-allies" target="_blank">here</a>.</li>
+                </ul>
+                <img src="powerLines.png" alt="Descriptive Alt Text" class="full-width-image">
+                
+            </div>
+        </div>
+
+        <!-- DROPDOWN FILTER MENU PANEL-->
+        <div class="navbar fixed-bottom navbar-expand-sm navbar-light bg-light">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mb-2 mx-2 border-top border-dark shadow-sm">
+                        <!-- Jurisdiction Dropdown -->
+                        <li class="nav-item dropup">
+                            <a class="nav-link dropdown-toggle" href="#" id="jurisdictionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="small">Select Jurisdiction</span>
+                                <br>
+                                <span class="h5" id="selectedJurisdictionLabel">All</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="jurisdictionDropdown" id="jurisdiction_select">
+                                <!--  items will be added here dynamically -->
+                            </ul>
+                        </li>
+                        <!-- Sector Dropdown -->
+                        <li class="nav-item dropup">
+                            <a class="nav-link dropdown-toggle" href="#" id="sectorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="small">Select Sector</span>
+                                <br>
+                                <span class="h5" id="selectedSectorLabel">All</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="sectorDropdown" id="sector_select">
+                                <!--  items will be added here dynamically -->
+                            </ul>
+                        </li>
+                        <!-- Region Dropdown -->
+                        <li class="nav-item dropup">
+                            <a class="nav-link dropdown-toggle" href="#" id="regionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="small">Select Region</span>
+                                <br>
+                                <span class="h5" id="selectedRegionLabel">All</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="regionDropdown" id="region_select">
+                                <!--  items will be added here dynamically -->
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+
+        <script>
+            // MAPBOX TOKEN CODE
+            mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmxkZW9kIiwiYSI6ImNsdjJ2M2QzZjBtbnMya253NjQ2MTFzZjYifQ.dowCB4gupvS5kSkrxky-wQ';
+        
+            // BASEMAP
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/light-v11',
+                projection: 'naturalEarth',
+                center: [0, 0],
+                zoom: 1.5,
+                minZoom: 1.5,
+                maxZoom: 14
+            });
+
+           
+            // UNION GEOJSON
+            const unions = {
+                "type": "FeatureCollection",
+                "name": "TUED_Unions_06172024_v3",
+                "features": [
+                    { "type": "Feature", "properties": { "id": 1, "Name": "Trade Union Confederation of the Americas (Confederación Sindical de las Americas) ", "Acronym": "TUCA CSA", "Jurisdiction": "Regional Body", "Area_of_representation": "Americas", "Country_HQ_Located": "Uruguay", "City_HQ_Located": "Montevideo", "lat": -34.871498560778797, "long": -56.124811476964197, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5168dd20f50d5ffff1d2_%5Bunionsforenergydemocracy.org%5DTUCA-logo.jpg", "Sector": "Diverse", "Website": "https://csa-csi.org/", "About": "The Trade Union Confederation of the Americas (TUCA) is the expression of the International Trade Union Confederation (ITUC) for the American continent. TUCA was founded on March 27, 2008, in Panama City, Panama, as a result of the unification of the Inter-American Confederation of Workers (IACW 1948-1951) and the Latin American Central of Workers (CLAT). The organization affiliates 48 national organizations from 21 countries and represents 55 million workers.", "iso_3166_1": "UY" }, "geometry": { "type": "Point", "coordinates": [ -56.12481147699998, -34.871498560999953 ] } },
+                    { "type": "Feature", "properties": { "id": 2, "Name": "Central de Trabajadores y Trabajadoras de la Argentina Autónoma", "Acronym": "CTA", "Jurisdiction": "National Centre", "Area_of_representation": "Argentina", "Country_HQ_Located": "Argentina", "City_HQ_Located": "Buenos Aires", "lat": -34.737019339587299, "long": -58.278738005578298, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e0146b5369767953b51_%5Bunionsforenergydemocracy.org%5D%5B144%5DCTA-logo.png", "Sector": "National Centre", "Website": "https://www.cta.org.ar/", "About": "", "iso_3166_1": "AR" }, "geometry": { "type": "Point", "coordinates": [ -58.278738005999969, -34.737019339999961 ] } },
+                    { "type": "Feature", "properties": { "id": 5, "Name": "Unión Obrera Metalúrgica de la República Argentina", "Acronym": "UOM ", "Jurisdiction": "National Union", "Area_of_representation": "Argentina", "Country_HQ_Located": "Argentina", "City_HQ_Located": "Buenos Aires", "lat": -34.573736624253897, "long": -58.478427929446902, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/639a0085a356e7f7794cb0b0_Union%20of%20Metallurgy%2C%20Ar%20logo.png", "Sector": "Industry / Manufacturing", "Website": "https://uom.org.ar/", "About": "UOM is a first degree trade union association that has the personal representation of the workers and employees of the metallurgical activity in the whole territory of the Argentine Republic.", "iso_3166_1": "AR" }, "geometry": { "type": "Point", "coordinates": [ -58.478427928999963, -34.573736623999935 ] } },
+                    { "type": "Feature", "properties": { "id": 6, "Name": "Federación de Trabajadores de la Energía, Industria, Servicios y Afines", "Acronym": "FeTIA", "Jurisdiction": "National Union", "Area_of_representation": "Argentina", "Country_HQ_Located": "Argentina", "City_HQ_Located": "Buenos Aires", "lat": -34.682590153204899, "long": -58.418532398895799, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/643d536a2ec7630ecebcdfee_IMG-20230409-WA0003.jpg", "Sector": "Industry / Manufacturing", "Website": "https://fetia.org.ar/", "About": "La federación se constituye dentro de la Central de los Trabajadores Argentinos (CTA). ", "iso_3166_1": "AR" }, "geometry": { "type": "Point", "coordinates": [ -58.418532398999957, -34.682590152999978 ] } },
+                    { "type": "Feature", "properties": { "id": 7, "Name": "Federación de Trabajadores de la Energía, Industria, Servicios y Afines", "Acronym": "FeTERA ", "Jurisdiction": "National Union", "Area_of_representation": "Argentina", "Country_HQ_Located": "Argentina", "City_HQ_Located": "Buenos Aires", "lat": -34.610714591392501, "long": -58.4325126876642, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d860cb532a13cb07acf3_SYNAFSEC.png", "Sector": "Energy - Other", "Website": "https://fetera.org.ar/", "About": "FeTERA, the Federation of Energy Workers of the Argentine Republic, is a second degree trade union organization, with authorities elected by secret and direct vote of its members; with union registration. FeTERA defends the rights of workers and the national energy resources such as electricity, gas, oil, coal, atomic energy, running water, chemistry and petrochemicals, understanding energy as a social good and a patrimony of the people.", "iso_3166_1": "AR" }, "geometry": { "type": "Point", "coordinates": [ -58.432512687999974, -34.610714590999976 ] } },
+                    { "type": "Feature", "properties": { "id": 8, "Name": "Australian Services Union", "Acronym": "ASU", "Jurisdiction": "National Union", "Area_of_representation": "Australia", "Country_HQ_Located": "Australia", "City_HQ_Located": "Melbourne (116-124 Queensberry Street\nCarlton South VIC 3053)", "lat": -37.804511, "long": 144.965095, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5039dd20f59423ffec44_%5Bunionsforenergydemocracy.org%5D%5B732%5DAustralian_Services_Union_Logo_2020.png", "Sector": "National Centre", "Website": "http://www.asu.asn.au/", "About": "The Australian Services Union is a trade union representing workers in a variety of industries. Union activities are structured into \"industries\": local government, energy and utilities, airlines and transport, social and community services, information technology, and clerical and administration employees.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 144.965095, -37.804511 ] } },
+                    { "type": "Feature", "properties": { "id": 9, "Name": "Electrical Trades Union", "Acronym": "ETU", "Jurisdiction": "National Union", "Area_of_representation": "Australia", "Country_HQ_Located": "Australia", "City_HQ_Located": "Sydney (Suite 408, level 4/30-40 Harcourt Parade)", "lat": -33.920088, "long": 151.202842, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5041c71787520a88765e_%5Bunionsforenergydemocracy.org%5D%5B750%5DETU-logo.jpg", "Sector": "Energy - Electricity", "Website": "https://www.etunational.asn.au/", "About": "The ETU is a union of more than 60,000 electricians, apprentices and electrical workers around Australia.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 151.202842, -33.920088 ] } },
+                    { "type": "Feature", "properties": { "id": 10, "Name": "New South Wales Nurses and Midwives' Association", "Acronym": "NSWNMA", "Jurisdiction": "Local Union ", "Area_of_representation": "New South Wales", "Country_HQ_Located": "Australia", "City_HQ_Located": "Sydney (50 O'Dea Ave, Waterloo NSW 2017, Australia)", "lat": -33.9033280580474, "long": 151.212299865608, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f26ffc7e35c09f27da1_%5Bunionsforenergydemocracy.org%5D%5B384%5DNSWNMA-logo.png", "Sector": "Health", "Website": "https://www.nswnma.asn.au/", "About": "The New South Wales Nurses and Midwives’ Association (NSWNMA) is the registered union for all nurses and midwives in New South Wales. The Association represents the industrial interests of nurses and midwives employed in NSW in the public, private, aged care, and primary health sectors.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 151.21229986600008, -33.903328057999943 ] } },
+                    { "type": "Feature", "properties": { "id": 11, "Name": "National Teritiary Educational Union", "Acronym": "NTEU", "Jurisdiction": "National Union", "Area_of_representation": "Australia", "Country_HQ_Located": "Australia", "City_HQ_Located": "Melbourne (120 Clarendon St, Southbank VIC 3006.)", "lat": -37.829068, "long": 144.958214, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a508d2af4dd3a604c7f59_%5Bunionsforenergydemocracy.org%5D%5B876%5DNTEU-logo.jpg", "Sector": "Education", "Website": "https://www.nteu.au/", "About": "NTEU represents 27,000 university workers of all types across Australia.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 144.958214000000112, -37.829068 ] } },
+                    { "type": "Feature", "properties": { "id": 12, "Name": "Unions ACT", "Acronym": "Unions ACT", "Jurisdiction": "Local Union ", "Area_of_representation": "Australian Capital Territory ", "Country_HQ_Located": "Australia", "City_HQ_Located": "Canberra", "lat": -35.2514112095363, "long": 149.13847614298601, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4eadcc3855893baf6808_%5Bunionsforenergydemocracy.org%5D%5B229%5DUNIONSAct-logo.png", "Sector": "Diverse", "Website": "https://unionsact.org.au/", "About": "Unions ACT is a representative body of trade union organisations in the Australian Capital Territory, with 24 affiliated unions representing over 33,000 union members. UnionsACT is the largest representative organisation in the ACT. ", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 149.138476143000048, -35.251411209999958 ] } },
+                    { "type": "Feature", "properties": { "id": 13, "Name": "United Workers Union ", "Acronym": "UWU", "Jurisdiction": "National Centre", "Area_of_representation": "Australia", "Country_HQ_Located": "Australia", "City_HQ_Located": "Melbourne", "lat": -37.820259, "long": 144.943153, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e42c5878502e1f0aa43_%5Bunionsforenergydemocracy.org%5D%5B179%5DUWU-logo.png", "Sector": "National Centre", "Website": "https://unitedworkers.org.au/", "About": "The United Workers Union (UWU) is an Australian trade union. Described as the biggest blue-collar union in Australia, the UWU covers more than 150,000 workers within over 45 industries, including warehousing, defence, hospitality, health, disability support, early childhood education, aged care, logistics and supermarket supply, cleaning, security, farming, manufacturing, and market research.[2][3] The union is the result of the 2019 merger of two Australian trade unions.  The union is unique in its structure, having only one centralised federal branch which is not separated into state branches.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 144.943153, -37.820259 ] } },
+                    { "type": "Feature", "properties": { "id": 14, "Name": "Victoria Trades Hall Council", "Acronym": "VTHC", "Jurisdiction": "Local Union ", "Area_of_representation": "Victoria", "Country_HQ_Located": "Australia", "City_HQ_Located": "Melbourne", "lat": -37.806872, "long": 144.966484, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a509dffc7e3d646f291a4_%5Bunionsforenergydemocracy.org%5D%5B889%5DVTHC-logo.jpg", "Sector": "Diverse", "Website": "https://www.weareunion.org.au/", "About": "The Victorian Trades Hall Council is a representative body of trade union organisations, known as a labour council, in the state of Victoria, Australia. It comprises 43 affiliated trade unions and professional associations, and eight regional Trades and Labour Councils of Victoria.", "iso_3166_1": "AU" }, "geometry": { "type": "Point", "coordinates": [ 144.966484, -37.806872 ] } },
+                    { "type": "Feature", "properties": { "id": 15, "Name": "Euskal Sindikatua", "Acronym": "ELA", "Jurisdiction": "National Union", "Area_of_representation": "Basque Country", "Country_HQ_Located": "Spain", "City_HQ_Located": "Bilbao", "lat": 43.266271, "long": -2.934784, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f490181379bc6227c39_%5Bunionsforenergydemocracy.org%5D%5B442%5DELA-logo.png", "Sector": "Diverse", "Website": "https://www.ela.eus/en/", "About": "Education International is a global union federation of teachers' trade unions consisting of 386 member organizations in 178 countries and territories that represents over 32.5 million education teachers and education support personnel from pre-school through university", "iso_3166_1": "ES" }, "geometry": { "type": "Point", "coordinates": [ -2.934784, 43.266271 ] } },
+                    { "type": "Feature", "properties": { "id": 16, "Name": "Langile Abertzaleeen Batzordeak", "Acronym": "LAB", "Jurisdiction": "National Union", "Area_of_representation": "Basque Country", "Country_HQ_Located": "Spain", "City_HQ_Located": "Gasteiz", "lat": 42.856045420000498, "long": -2.66952841596849, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4efc13f59c50fd6da357_%5Bunionsforenergydemocracy.org%5D%5B295%5Dlogo_LAB-02.jpg", "Sector": "Diverse", "Website": "https://www.lab.eus/", "About": "", "iso_3166_1": "ES" }, "geometry": { "type": "Point", "coordinates": [ -2.669528415999935, 42.856045420000044 ] } },
+                    { "type": "Feature", "properties": { "id": 17, "Name": "General Union of Public Services", "Acronym": "CGSP", "Jurisdiction": "National Centre", "Area_of_representation": "Belgium", "Country_HQ_Located": "Belgium", "City_HQ_Located": "Brussels", "lat": 50.8594740672767, "long": 4.35811268980199, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50a8fe442db5af01545b_%5Bunionsforenergydemocracy.org%5D%5B893%5DCGSP-2.png", "Sector": "Public Services", "Website": "https://www.abvv.be/", "About": "The General Union of Public Services (Dutch: Algemene Centrale der Openbare Diensten, ACOD; French: Centrale Générale des Services Publics, CGSP) is a trade union representing public sector workers in Belgium.", "iso_3166_1": "BE" }, "geometry": { "type": "Point", "coordinates": [ 4.358112690000041, 50.859474067000065 ] } },
+                    { "type": "Feature", "properties": { "id": 18, "Name": "Confédération des organisations syndicales indépendantes du Bénin", "Acronym": "COSI-Bénin", "Jurisdiction": "National Centre", "Area_of_representation": "Benin ", "Country_HQ_Located": "Benin", "City_HQ_Located": "Cotonou", "lat": 6.3593896740057998, "long": 2.4179765804294502, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63861f3909e43ace6f2b5d3c_logo%20COSI%20-%20COSI-Be%CC%81nin%20COSI-Be%CC%81nin.jpeg", "Sector": "National Centre", "Website": "https://www.ituc-africa.org/Confederation-des-organisations.html?lang=fr", "About": "", "iso_3166_1": "BJ" }, "geometry": { "type": "Point", "coordinates": [ 2.417976580000072, 6.359389674000056 ] } },
+                    { "type": "Feature", "properties": { "id": 19, "Name": "Botswana Federation of Trade Unions", "Acronym": "BFTU", "Jurisdiction": "National Centre", "Area_of_representation": "Botswana", "Country_HQ_Located": "Botswana", "City_HQ_Located": "Gaborone", "lat": -24.675582915775301, "long": 25.9150401956508, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63c06b72716eb59acf22b855_BFTU_logo%20-%20Thusang%20Butale.png", "Sector": "National Centre", "Website": "https://bftu.org.bw/", "About": "", "iso_3166_1": "BW" }, "geometry": { "type": "Point", "coordinates": [ 25.915040196000064, -24.675582915999939 ] } },
+                    { "type": "Feature", "properties": { "id": 20, "Name": "Confederação Nacional dos Metalúrgicos", "Acronym": "CNM", "Jurisdiction": "National Union", "Area_of_representation": "Brazil", "Country_HQ_Located": "Brazil", "City_HQ_Located": "São Paulo (Rua Cincinato Braga, 40 - Planalto, São Bernardo do Campo - SP, 09890-300, Brazil)", "lat": -23.697198571188199, "long": -46.563255313558201, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fdcc71787846c886f6a_%5Bunionsforenergydemocracy.org%5D%5B598%5DLogo-CNM.png", "Sector": "Industry / Manufacturing", "Website": "https://cnmcut.org.br/", "About": "The metallurgical sector in Brazil has 1.9 million workers, which represent 4.0% of all workers in the formal job market. Of every four workers in industry in general, one is from the metallurgical industry. Of this total, 676,696 thousand are represented by CNM/CUT.", "iso_3166_1": "BR" }, "geometry": { "type": "Point", "coordinates": [ -46.563255313999946, -23.697198570999944 ] } },
+                    { "type": "Feature", "properties": { "id": 21, "Name": "Central Única dos Trabalhadores e Trabalhadoras", "Acronym": "CUT BRASIL", "Jurisdiction": "National Centre", "Area_of_representation": "Brazil", "Country_HQ_Located": "Brazil", "City_HQ_Located": "São Paulo (Rua Caetano Pinto, 575, Brás - São Paulo/SP - CEP 03041-000)", "lat": -23.550652191632398, "long": -46.619675745825198, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50eeffc7e3777af299a4_%5Bunionsforenergydemocracy.org%5DCUTBrasil.jpg", "Sector": "National Centre", "Website": "https://www.cut.org.br/", "About": "Formed in 1983, the Central Única dos Trabalhadores (English: Unified Workers' Central), commonly known by the acronym CUT, is the main national trade union center in Brazil. CUT is the largest and most important trade union federation in Brazil, representing over 7.4 million workers in all productive areas. It is also the largest trade union center in Latin America and the fifth largest in the world. ", "iso_3166_1": "BR" }, "geometry": { "type": "Point", "coordinates": [ -46.619675745999984, -23.550652191999973 ] } },
+                    { "type": "Feature", "properties": { "id": 22, "Name": "Federação Única dos Petroleiros", "Acronym": "FUP", "Jurisdiction": "National Centre", "Area_of_representation": "Brazil", "Country_HQ_Located": "Brazil", "City_HQ_Located": "Rio de Janeiro (Av. Rio Branco, 133, 21º andar, Centro - CEP: 20.040-006)", "lat": -22.9042373762416, "long": -43.177665475727302, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5110ffc7e3ea38f29dbd_%5Bunionsforenergydemocracy.org%5DFUP.png", "Sector": "Energy - Hydrocarbon", "Website": "https://fup.org.br/", "About": "", "iso_3166_1": "BR" }, "geometry": { "type": "Point", "coordinates": [ -43.177665475999959, -22.904237375999969 ] } },
+                    { "type": "Feature", "properties": { "id": 23, "Name": "Syndicat National Autonomes Des Travailleurs De L'energie, De L'eau Et Des Mines Du Cameroun", "Acronym": "SYNATEEC", "Jurisdiction": "National Union", "Area_of_representation": "Cameroon", "Country_HQ_Located": "Cameroon", "City_HQ_Located": "?", "lat": 3.8219517741538902, "long": 11.5155900060183, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/66355ef28c1c472ac4e7070d_logo-synateec1.jpg", "Sector": "Public Services", "Website": "https://www.facebook.com/synateec.syndicat/", "About": "Cameroon National Autonomous Union Of Energy, Water And Mines Workers Union (CANUEW)", "iso_3166_1": "CM" }, "geometry": { "type": "Point", "coordinates": [ 11.515590006000025, 3.82195177400007 ] } },
+                    { "type": "Feature", "properties": { "id": 24, "Name": "Syndicat national des ferrailleurs et de la sauvegarde des écosystèmes du Cameroun", "Acronym": "SYNFSEC", "Jurisdiction": "National Union", "Area_of_representation": "Cameroon", "Country_HQ_Located": "Cameroon", "City_HQ_Located": "?", "lat": 3.8686465, "long": 11.5147049, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d860cb532a13cb07acf3_SYNAFSEC.png", "Sector": "Energy - Electricity", "Website": "", "About": "", "iso_3166_1": "CM" }, "geometry": { "type": "Point", "coordinates": [ 11.514704900000027, 3.868646500000068 ] } },
+                    { "type": "Feature", "properties": { "id": 25, "Name": "British Columbia General Employees' Union ", "Acronym": "BCGEU", "Jurisdiction": "Regional Body", "Area_of_representation": "British Columbia", "Country_HQ_Located": "Canada", "City_HQ_Located": "Burnaby (4911 Canada Way (at Iris)\nBurnaby, B.C. V5G 3W3)", "lat": 49.246527392825399, "long": -122.975706201458, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50b6cc38554bf4af8a72_%5Bunionsforenergydemocracy.org%5D%5B983%5DBCGEU-logo.jpg", "Sector": "Other", "Website": "https://www.bcgeu.ca/", "About": "The BCGEU is one of the most diverse unions in British Columbia, representing approximately 80,000 men and women in more than 550 bargaining units.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -122.97570620099998, 49.246527393000065 ] } },
+                    { "type": "Feature", "properties": { "id": 26, "Name": "British Columbia Teachers’ Federation", "Acronym": "BCTF", "Jurisdiction": "Regional Body", "Area_of_representation": "British Columbia", "Country_HQ_Located": "Canada", "City_HQ_Located": "Vancouver (100 - 550 West 6th Avenue\nVancouver, BC  V5Z 4P2)", "lat": 49.265823892611003, "long": -123.11721314689299, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a502bc71787de598875e3_%5Bunionsforenergydemocracy.org%5D%5B722%5DBCTF-logo.png", "Sector": "Education", "Website": "https://www.bctf.ca/", "About": "The British Columbia Teachers' Federation (BCTF) is the labour union that represents all public school teachers in the province of British Columbia, Canada. It was established as an organization in 1917. As of 2018, the BCTF is made up of 45,000 teachers from across the province of British Columbia.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -123.16891931461674, 49.26650979065261 ] } },
+                    { "type": "Feature", "properties": { "id": 27, "Name": "Canadian Labour Congress:", "Acronym": "CLC", "Jurisdiction": "National Centre", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Ottawa (2841 Riverside Drive\nOttawa, Ontario K1V 8X7)", "lat": 45.3713979874627, "long": -75.689281716392202, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fcc018137147a228474_%5Bunionsforenergydemocracy.org%5D%5B568%5DCLC-logo.png", "Sector": "National Centre", "Website": "https://canadianlabour.ca/", "About": "The Canadian Labour Congress, or CLC (French: Congrès du travail du Canada or CTC) is a national trade union centre, the central labour body in Canada to which most Canadian labour unions are affiliated.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -75.689281715999982, 45.37139798700008 ] } },
+                    { "type": "Feature", "properties": { "id": 28, "Name": "Canadian Union of Public Employees", "Acronym": "CUPE", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Ottawa  (1375 St. Laurent Blvd. Ottawa, Ontario K1G 0Z7)", "lat": 45.418122431209, "long": -75.632936238782605, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5013a64d72ff11a6301f_%5Bunionsforenergydemocracy.org%5D%5B653%5DCUPE-logo.png", "Sector": "Diverse", "Website": "https://cupe.ca/", "About": "The Canadian Union of Public Employees is Canada’s largest union, with 740,000 members across the country. CUPE represents workers in health care, emergency services, education, early learning and child care, municipalities, social services, libraries, utilities, transportation, airlines and more. We have 68 offices across the country, in every province.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -75.632936238999946, 45.418122431000029 ] } },
+                    { "type": "Feature", "properties": { "id": 29, "Name": "Canadian Union of Postal Workers", "Acronym": "CUPW", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Ottawa (377 Bank Street\nOttawa, Ontario K2P 1Y3\nCanada)", "lat": 45.376343085341986, "long": -75.76561843494954, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4e8a4d9fe9740ec5d520_%5Bunionsforenergydemocracy.org%5D%5B203%5DCUPW-logo.jpg", "Sector": "Public Services", "Website": "https://www.cupw.ca/", "About": "Many CUPW members work for Canada Post as letter carriers, rural and suburban mail carriers, postal clerks, mail handlers and despatchers, technicians, mechanics and electricians. CUPW also represents cleaners, couriers, drivers, vehicle mechanics, warehouse workers, printers, emergency medical dispatchers and other workers in the private sector.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -75.765618, 45.376343] } },
+                    { "type": "Feature", "properties": { "id": 30, "Name": "The Fédération des travailleurs et travailleuses du Québec", "Acronym": "FTQ", "Jurisdiction": "Local Union", "Area_of_representation": "Quebec", "Country_HQ_Located": "Canada", "City_HQ_Located": "Montreal (565, boulevard Crémazie Est, bureau 12100\nMontréal (Québec)\nH2M 2W3)", "lat": 45.546885421576299, "long": -73.638174435692093, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f0f28f7760e2b85c7a2_%5Bunionsforenergydemocracy.org%5D%5B317%5DFTQ-logo.png", "Sector": "Diverse", "Website": "https://ftq.qc.ca/articles/tous/tous/tous/1", "About": "The Fédération des travailleurs et travailleuses du Québec is the largest labour federation in Quebec in terms of its membership. It has over 500,000 members, who account for 44% of the unionised workers in Quebec. This ratio is 60% in the private sector, in which most members work. ", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -73.638174435999986, 45.546885422000059 ] } },
+                    { "type": "Feature", "properties": { "id": 31, "Name": "National Union of Public and General Employees", "Acronym": "NUPGE", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Nepean (15 Auriga Drive\nNepean, ON K2E 1B7)", "lat": 45.334954443998001, "long": -75.703985762779595, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/642e18a50831f92d23d685d5_NUPGE%20new%20logo%20Canada.png", "Sector": "Public Services", "Website": "https://nupge.ca/", "About": "NUPGE has 425,000 members who work to deliver public services of every kind to the citizens of their home provinces. They also have a large and growing number of members who work for private businesses.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -75.703985762999935, 45.334954444000061 ] } },
+                    { "type": "Feature", "properties": { "id": 32, "Name": "Public Service Alliance of Canada", "Acronym": "PSAC AFPC", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Ottawa (233 Gilmour Street\nOttawa, Ontario)", "lat": 45.416356055604098, "long": -75.690861447082, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/634ecd7b7678c4e8648bfa92_psac_afpc_id_colored_JPEG_e.jpeg", "Sector": "Public Services", "Website": "https://psacunion.ca/", "About": "The Public Service Alliance of Canada represents more than 230000 workers in every province and territory in Canada and in locations around the world.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -75.690861446999975, 45.416356056000041 ] } },
+                    { "type": "Feature", "properties": { "id": 33, "Name": "Unifor", "Acronym": "UNIFOR", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Toronto (115 Gordon Baker Rd\nToronto, ON\nM2H 0A8)", "lat": 43.802685470519997, "long": -79.344046318320395, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5092a64d72084ea63487_%5Bunionsforenergydemocracy.org%5D%5B884%5DUNIFOR-logo.jpg", "Sector": "Private Sector", "Website": "https://www.unifor.org/", "About": "Unifor is Canada’s largest private sector union, with more than 315,000 members across the country, working in every major sector of the Canadian economy.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -79.344046317999982, 43.802685471000075 ] } },
+                    { "type": "Feature", "properties": { "id": 34, "Name": "Vancouver and District Labour Council.", "Acronym": "VDLC", "Jurisdiction": "Local Union ", "Area_of_representation": "Vancouver", "Country_HQ_Located": "Canada", "City_HQ_Located": "Vancouver (Suite 170 – 111 Victoria Drive\nVancouver, BC, V5L 4C4)", "lat": 49.283540040686397, "long": -123.06579968921901, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a505bffc7e3158cf28cae_%5Bunionsforenergydemocracy.org%5D%5B796%5DVDLC-logo.png", "Sector": "Diverse", "Website": "https://vdlc.ca/", "About": "The VDLC represents 60,000 workers from over 90 affiliated unions. Labour council members work at food stores, on the docks, in public services, construction and much more. We are a chartered body of the Canadian Labour Congress (CLC), representing 3.5 million unionized Canadians. The VDLC was founded in 1889 as the “Vancouver Trades and Labour Council”, making it one of the oldest labour organizations in the country.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -123.065799688999959, 49.283540041000037 ] } },
+                    { "type": "Feature", "properties": { "id": 35, "Name": "Vancouver Secondary Teachers' Association", "Acronym": "VSTA", "Jurisdiction": "Local Union ", "Area_of_representation": "Vancouver", "Country_HQ_Located": "Canada", "City_HQ_Located": "Vancouver (Unit 505 63 West 6th Ave, Vancouver)", "lat": 49.265870289131698, "long": -123.10604017387401, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4ea294c9d1525eac3f7f_%5Bunionsforenergydemocracy.org%5D%5B219%5DVSTA-logo.png", "Sector": "Education", "Website": "https://vsta.ca/", "About": "The Vancouver Secondary Teachers’ Association (VSTA Local 39-2) is a sub-local of the BC Teachers’ Federation (BCTF). ", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -123.106040173999986, 49.265870289000077 ] } },
+                    { "type": "Feature", "properties": { "id": 36, "Name": "Movement of United Professionals", "Acronym": "MoveUP", "Jurisdiction": "National Union", "Area_of_representation": "Canada", "Country_HQ_Located": "Canada", "City_HQ_Located": "Burnaby (Suite 301 – 4501 Kingsway\nBurnaby, BC  V5H 0E5)", "lat": 49.230513357112201, "long": -123.003791329694, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d77bb24af1a98aa52cb6_moveup.png", "Sector": "Diverse", "Website": "https://moveuptogether.ca/about-us/", "About": "MoveUP represents nearly 14,000 union members at public and private sector companies across Canada.\n\nMoveUP is Local 378 of the Canadian Office and Professional Employees Union (COPE SEPB) and they are affiliated with the BC Federation of Labour, the Canadian Labour Congress, and provincial labour councils. They are also affiliated with UNI Global Union, IndustriALL Global Union, and Public Services International through the national union. Thenational union, COPE SEPB, represents over 30,000 members across Canada.", "iso_3166_1": "CA" }, "geometry": { "type": "Point", "coordinates": [ -123.003791329999956, 49.230513357000063 ] } },
+                    { "type": "Feature", "properties": { "id": 37, "Name": "Central Unitaria de Trabajadores y Trabajadoras ", "Acronym": "CUT Chile", "Jurisdiction": "National Centre", "Area_of_representation": "Chile", "Country_HQ_Located": "Chile", "City_HQ_Located": "Santiago", "lat": -33.445240989297403, "long": -70.654701430110606, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/64821b41721f5087591ad6ec_CUT%20Chile%20Logo.png", "Sector": "National Centre", "Website": "https://cut.cl/", "About": "The Workers' United Center of Chile (Spanish: Central Unitaria de Trabajadores de Chile, CUT) is a union federation in Chile. The CUT was founded in 1953, but it was suppressed after the Chilean coup of 1973. It was refounded in September 1988 near the end of Augusto Pinochet's dictatorship. The CUT is affiliated with the International Trade Union Confederation (ITUC).", "iso_3166_1": "CL" }, "geometry": { "type": "Point", "coordinates": [ -70.654701429999989, -33.445240988999956 ] } },
+                    { "type": "Feature", "properties": { "id": 38, "Name": "Federación Nacional de Sindicatos de Trabajadores del Petróleo y Afines de Chile", "Acronym": "FENATRAPECH", "Jurisdiction": "National Union", "Area_of_representation": "Chile", "Country_HQ_Located": "Chile", "City_HQ_Located": "Santiago", "lat": -33.4171647616839, "long": -70.599113821835502, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f8dc7178728d9886c63_%5Bunionsforenergydemocracy.org%5D%5B515%5DFENATRAPECH.jpg", "Sector": "Energy - Hydrocarbon", "Website": "https://www.facebook.com/federaciondelpetroleo/", "About": "", "iso_3166_1": "CL" }, "geometry": { "type": "Point", "coordinates": [ -70.599113821999936, -33.41716476199997 ] } },
+                    { "type": "Feature", "properties": { "id": 39, "Name": "Central Unitaria de Trabajadores y Trabajadoras ", "Acronym": "CUT COLOMBIA", "Jurisdiction": "National Centre", "Area_of_representation": "Colombia", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Bogotá", "lat": 4.69191883274473, "long": -74.071656054520787,  "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50e62af4dde6334c85a9_%5Bunionsforenergydemocracy.org%5DCUT-Colombia-logo.png", "Sector": "National Centre", "Website": "https://cut.org.co/", "About": "The Central Union of Workers is a Leftist trade union center in Colombia. It was formed in 1986, and is the country's largest union federation, with 546,000 members. ICTUR reports that nearly 800 members of CUT were murdered between 1987 and 1992.", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -74.071656054520787, 4.69191883274473 ] } },
+                    { "type": "Feature", "properties": { "id": 40, "Name": "Sindicato de Trabajadores de la Energía de Colombia", "Acronym": "SINTRAELECOL", "Jurisdiction": "National Union", "Area_of_representation": "Colombia", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Bogotá", "lat": 4.6002685465336999, "long": -74.073651779314204, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a515913f59c70e56db604_%5Bunionsforenergydemocracy.org%5Dsintraelecol_nacional.png", "Sector": "Energy - Electricity", "Website": "https://www.sintraelecol.org/", "About": "Sintraelecol is the national industrial union of the Colombian energy sector.", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -74.073651778999988, 4.600268547000042 ] } },
+                    { "type": "Feature", "properties": { "id": 41, "Name": "Sindicato de Trabajadores de EMCALI", "Acronym": "SINTRAEMCALI", "Jurisdiction": "Local Union ", "Area_of_representation": "Cali", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Cali", "lat": 3.4552851663194, "long": -76.5263677537543, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50822af4dd497a4c7eb7_%5Bunionsforenergydemocracy.org%5D%5B862%5DSINTRAEMCALI-logo.png", "Sector": "Public Services", "Website": "https://twitter.com/sintraemcali?lang=en", "About": "Sintraemcali is a union organization with 85 years of history defending the public assets of the people of Cali and the stability of workers.", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -76.526367753999978, 3.455285166000067 ] } },
+                    { "type": "Feature", "properties": { "id": 42, "Name": "Unión Sindical Obrera de la Industria del Petróleo", "Acronym": "USO ", "Jurisdiction": "National Union", "Area_of_representation": "Colombia", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Barrancabermeja", "lat": 7.0659280846658898, "long": -73.850923700279296, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279de14d1e99229ee8da9c_%5Bunionsforenergydemocracy.org%5D%5B138%5DUSO%20Logo%20Colombia.jpg", "Sector": "Energy - Hydrocarbon", "Website": "https://www.uso.org.co/", "About": "The Unión Sindical Obrera de la Industria del Petróleo, or simply USO, is the union for oil industry workers in Colombia and is affiliated with the Central Unitaria de Trabajadores de Colombia and the Federación Unitaria de Trabajadores Mineros, Energéticos, Metalúrgicos, Químicos y de Industrias Similares. USO is one of the largest unions in the country and has strongly opposed the privatization and \"democratization\" of state-owned ECOPETROL.", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -73.850923699999953, 7.065928085000053 ] } },
+                    { "type": "Feature", "properties": { "id": 44, "Name": "Confederación Ecuatoriana de Organizaciones Clasistas Unitarias de Trabajadores", "Acronym": "CEDOCUT", "Jurisdiction": "National Centre", "Area_of_representation": "Ecuador ", "Country_HQ_Located": "Ecuador", "City_HQ_Located": "Quito", "lat": -0.219099694385579, "long": -78.508402933974693, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d48637cd709a40993e5b_logo%20cedocut%20png%20(3)%20-%20SOLIDARIDAD%20Y%20LUCHA.png", "Sector": "National Centre", "Website": "https://www.cedocut.org.ec/", "About": "The Confederación Ecuatoriana de Organizaciones Clasistas Unitarias de Trabajadores (CEDOCUT) is a trade union centre in Ecuador. It has a membership of over 86,000. As of 2006, CEDOCUT organized 92 trade unions, primarily unions in small and medium-sized companies, farmers and neighbourhood associations", "iso_3166_1": "EC" }, "geometry": { "type": "Point", "coordinates": [ -78.508402933999946, -0.219099693999965 ] } },
+                    { "type": "Feature", "properties": { "id": 45, "Name": "Trade Union and Worker News", "Acronym": "", "Jurisdiction": "National Union", "Area_of_representation": "Eswatini", "Country_HQ_Located": "Eswatini", "City_HQ_Located": "?", "lat": -26.3166508, "long": 31.1333345, "Region": "Africa", "Logo": "", "Sector": "Other", "Website": "", "About": "", "iso_3166_1": "SZ" }, "geometry": { "type": "Point", "coordinates": [ 31.133334500000046, -26.316650799999934 ] } },
+                    { "type": "Feature", "properties": { "id": 46, "Name": "European Federation of Public Service Unions", "Acronym": "EPSU", "Jurisdiction": "Regional Body", "Area_of_representation": "Europe", "Country_HQ_Located": "Belgium", "City_HQ_Located": "Brussels", "lat": 50.861115271192098, "long": 4.33159260500722, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4ece775a87475fbf0785_%5Bunionsforenergydemocracy.org%5D%5B238%5DEPSU-logo.jpg", "Sector": "Public Services", "Website": "https://www.epsu.org/", "About": "The European Federation of Public Service Unions (EPSU) represents 8 million public service workers across Europe. EPSU is the European region of the global public services federation PSI and is also a member of the European Trade Union Confederation.", "iso_3166_1": "BE" }, "geometry": { "type": "Point", "coordinates": [ 4.331592605000026, 50.861115271000074 ] } },
+                    { "type": "Feature", "properties": { "id": 47, "Name": "European Transport Workers' Federation", "Acronym": "ETF", "Jurisdiction": "Regional Body", "Area_of_representation": "Europe", "Country_HQ_Located": "Belgium", "City_HQ_Located": "Brussels", "lat": 50.838795881792699, "long": 4.3732313679794803, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a51052af4dde2914c87e0_%5Bunionsforenergydemocracy.org%5DETF-logo-1.png", "Sector": "Transport", "Website": "https://www.etf-europe.org/", "About": "The European Transport Workers’ Federation (ETF) is a pan-European trade union organisation which embraces transport trade unions from the European Union, the European Economic Area and Central and Eastern European countries. The ETF represents more than 5 million transport workers from more than 200 transport unions and 38 European countries. These workers are found in all parts of the transport industry, on land, sea and in the air. ", "iso_3166_1": "BE" }, "geometry": { "type": "Point", "coordinates": [ 4.373231368000063, 50.838795882000056 ] } },
+                    { "type": "Feature", "properties": { "id": 48, "Name": "Confederación Intersindical Galega", "Acronym": "CIG", "Jurisdiction": "National Union", "Area_of_representation": "Galicia", "Country_HQ_Located": "Spain", "City_HQ_Located": "Santiago de Compostela", "lat": 42.8844747666733, "long": -8.5133369944705795, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63923396fb7c48861c7c3899_CIG%20logl.png", "Sector": "Diverse", "Website": "https://www.cig.gal/", "About": "The Galician Intersindical Confederation is made up of 7 regions (Vigo, A Coruña, Pontevedra, Santiago de Compostela, Ferrol, Ourense and Lugo) and 8 sectoral federations (Public Administration; Banking, Savings, Insurance and Offices; Construction and Wood; Education; Industry ; FGAMT (Food, Textile and Communications); Health;). The CIG has the status of \"most representative union\" at the level of the entire Spanish State alongside CCOO, UGT and the Basque unions ELA and LAB.", "iso_3166_1": "ES" }, "geometry": { "type": "Point", "coordinates": [ -8.513336993999928, 42.884474767000029 ] } },
+                    { "type": "Feature", "properties": { "id": 49, "Name": "Public Utility Workers Union", "Acronym": "PUWU", "Jurisdiction": "National Union", "Area_of_representation": "Ghana", "Country_HQ_Located": "Ghana", "City_HQ_Located": "Accra", "lat": 5.5519805, "long": -0.2186616, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/64027dbd5e583719d36acfee_Ghana-PUWU%20logo%20-%20Michael%20Nyantakyi.jpg", "Sector": "Public Services", "Website": "https://puwu.com.gh/", "About": "PUWU draws its membership from both the Private and Public Sector. On formation, the Union had a membership of 1700 workers in all. It reached a peak of 15,350 in the late 1980s but currently stands at 8,850. Currently PUWU draws its membership from Electricity Company Of Ghana, Ghana Water Company Ltd, Community Water and Sanitation Agency, Mensvic Hotel, and Northern Region Rural Integrated Project.", "iso_3166_1": "GH" }, "geometry": { "type": "Point", "coordinates": [ -0.218661599999962, 5.55198050000007 ] } },
+                    { "type": "Feature", "properties": { "id": 50, "Name": "Education International", "Acronym": "EI", "Jurisdiction": "Global Union Federation", "Area_of_representation": "Global", "Country_HQ_Located": "Belgium", "City_HQ_Located": "Brussels", "lat": 50.8352629, "long": 4.3313707, "Region": "Global", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a510021371b4009db0a4a_%5Bunionsforenergydemocracy.org%5DEI-logo-1.jpg", "Sector": "Education", "Website": "https://www.ei-ie.org/en", "About": "Founded in 1993, Education International is a global union federation of teachers' trade unions consisting of 383 member organizations in 178 countries and territories that represents over 32 million education teachers and education support personnel from pre-school through university. ", "iso_3166_1": "BE" }, "geometry": { "type": "Point", "coordinates": [ 4.331370700000036, 50.835262900000032 ] } },
+                    { "type": "Feature", "properties": { "id": 51, "Name": "International Transport Workers' Federation", "Acronym": "ITF", "Jurisdiction": "Global Union Federation", "Area_of_representation": "Global", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "London", "lat": 51.464404202049202, "long": -0.082082485135319003, "Region": "Global", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5138a64d72b48da63d65_%5Bunionsforenergydemocracy.org%5DITF-logo.png", "Sector": "Transport", "Website": "https://www.itfglobal.org/en", "About": "The International Transport Workers’ Federation (ITF) is a democratic, affiliate-led federation recognised as the world’s leading transport authority. We fight passionately to improve workers' lives, connecting more than 700 affiliated trade unions from 150 countries to secure rights, equality and justice for workers' globally. We are the voice for nearly 18.5 million transport workers across the world.", "iso_3166_1": "UK" }, "geometry": { "type": "Point", "coordinates": [ -0.082082484999944, 51.464404202000026 ] } },
+                    { "type": "Feature", "properties": { "id": 52, "Name": "International Union of Food, Agricultural, Hotel, Restaurant, Catering, Tobacco and Allied Workers' Associations", "Acronym": "IUF", "Jurisdiction": "Global Union Federation", "Area_of_representation": "Global", "Country_HQ_Located": "Switzerland", "City_HQ_Located": "Geneva", "lat": 46.2100075, "long": 6.140028, "Region": "Global", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50b0dd20f592b7ffee3d_%5Bunionsforenergydemocracy.org%5D%5B909%5DIUF-logo.png", "Sector": "Diverse", "Website": "https://www.iuf.org/", "About": "", "iso_3166_1": "CH" }, "geometry": { "type": "Point", "coordinates": [ 6.140028, 46.210007500000074 ] } },
+                    { "type": "Feature", "properties": { "id": 53, "Name": "Public Services International", "Acronym": "PSI", "Jurisdiction": "Global Union Federation", "Area_of_representation": "Global", "Country_HQ_Located": "France", "City_HQ_Located": "Ferney-Voltaire", "lat": 46.262481155225203, "long": 6.0721476160076904, "Region": "Global", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a501e2c0f36ca2cc82883_%5Bunionsforenergydemocracy.org%5D%5B708%5DPSI-logo.jpg", "Sector": "Public Services", "Website": "https://publicservices.international/", "About": "Public Services International (PSI) is the global union federation for workers in public services, including those who work in social services, health care, municipal services, central government and public utilities. As of November 2019, PSI has 700 affiliated trade unions from 154 countries representing over 30 million workers.", "iso_3166_1": "FR" }, "geometry": { "type": "Point", "coordinates": [ 6.072147616000052, 46.262481155000046 ] } },
+                    { "type": "Feature", "properties": { "id": 54, "Name": "Thessaloniki Water Company Worker's Union", "Acronym": "EYATH", "Jurisdiction": "Local Union ", "Area_of_representation": "Thessaloniki", "Country_HQ_Located": "Greece", "City_HQ_Located": "Thessaloniki  (Ιωάννου, Tsimiski 98, Thessaloniki 546 22, Greece)", "lat": 40.6299158206212, "long": 22.9471718833945, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f012af4ddb98c4c65b9_%5Bunionsforenergydemocracy.org%5D%5B305%5DEYATH-logo.png", "Sector": "Public Services", "Website": "https://www.eyath.gr/?lang=en", "About": "EYATH SA provides daily water and sanitation services to more than 1.2 million citizens of Thessaloniki's urban planning complex.", "iso_3166_1": "GR" }, "geometry": { "type": "Point", "coordinates": [ 22.947171883000067, 40.629915821000054 ] } },
+                    { "type": "Feature", "properties": { "id": 55, "Name": "New Trade Union Initiative", "Acronym": "NTUI", "Jurisdiction": "National Centre", "Area_of_representation": "India", "Country_HQ_Located": "India", "City_HQ_Located": "New Delhi (Dayanand Colony, Lajpat Nagar – IV\nNew Delhi – 110024, India)", "lat": 28.5622634868459, "long": 77.249154253572598, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fc36830f7777b5484ba_%5Bunionsforenergydemocracy.org%5D%5B555%5DNTUI-logo.png", "Sector": "National Centre", "Website": "https://ntui.org.in/", "About": "Several independent trade unions in the organised and unorganised sector came together under the banner of the New Trade Union Initiative (NTUI) in the year 2001.\n\nAfter extensive deliberation, NTUI decided to constitute itself formally into a federation and seek the status of a national trade union federation. This was the context for the Founding Conference of the NTUI, held on 5th & 6th March 2006 in New Delhi.", "iso_3166_1": "IN" }, "geometry": { "type": "Point", "coordinates": [ 77.249154254000075, 28.562263487000052 ] } },
+                    { "type": "Feature", "properties": { "id": 56, "Name": "Mandate Trade Union", "Acronym": "Mandate Trade Union", "Jurisdiction": "National Union", "Area_of_representation": "Ireland", "Country_HQ_Located": "Ireland", "City_HQ_Located": "Dublin", "lat": 53.353532370956998, "long": -6.2616945890067601, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63990006aadf0549f7da4fcb_MANDATE_Logo_P186_EC.jpg", "Sector": "Diverse", "Website": "https://mandate.ie/", "About": "Mandate is a union of over 40,000 workers across Ireland. Members are retail, barn and administrative workers.", "iso_3166_1": "IE" }, "geometry": { "type": "Point", "coordinates": [ -6.261694588999944, 53.353532371000028 ] } },
+                    { "type": "Feature", "properties": { "id": 57, "Name": "Confederazione Generale Italiana del Lavoro ", "Acronym": "CGIL", "Jurisdiction": "National Centre", "Area_of_representation": "Italy", "Country_HQ_Located": "Italy", "City_HQ_Located": "Rome (Corso Italia, 25\n00198 - Roma)", "lat": 41.911398839049497, "long": 12.491983112286601, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a507394c9d15b9fac58ed_%5Bunionsforenergydemocracy.org%5D%5B808%5DCGIL.jpg", "Sector": "National Centre", "Website": "https://www.cgil.it/", "About": "The Italian General Confederation of Labor is an association representing workers and employment. It is the oldest Italian trade union organization and is also the most representative, with over 5 million members.", "iso_3166_1": "IT" }, "geometry": { "type": "Point", "coordinates": [ 12.491983112000071, 41.911398839000071 ] } },
+                    { "type": "Feature", "properties": { "id": 58, "Name": "KENYA ELECTRICAL TRADES AND ALLIED WORKERS’ UNION", "Acronym": "KETAWU", "Jurisdiction": "National Centre", "Area_of_representation": "Kenya", "Country_HQ_Located": "Kenya", "City_HQ_Located": "Nairobi", "lat": -1.27655677993964, "long": 36.8266194653837, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/64027ec3a5559250035a84c5_KETAWU%20logo.png", "Sector": "Energy - Electricity", "Website": "https://ketawu.or.ke/", "About": "KETAWU is a non-profit organization registered with the Registrar of Trade Unions in Kenya. It is an affiliate of the Central Organization of Trade Unions (COTU).  KETAWU was formed in early 1960. ", "iso_3166_1": "KE" }, "geometry": { "type": "Point", "coordinates": [ 36.826619465000078, -1.276556779999964 ] } },
+                    { "type": "Feature", "properties": { "id": 59, "Name": "Korean Public Service and Transport Workers' Union ", "Acronym": "KPTU", "Jurisdiction": "National Union", "Area_of_representation": "South Korea", "Country_HQ_Located": "South Korea", "City_HQ_Located": "Seoul", "lat": 37.547555189921503, "long": 126.86312986308501, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a506bcc3855561daf85c0_%5Bunionsforenergydemocracy.org%5D%5B805%5DKPTU-logo.jpg", "Sector": "Diverse", "Website": "https://www.kptu.net/", "About": "The Korean Public Service and Transport Workers’ Union (KPTU) brings together workers throughout the public sector, transport industry and social services. KPTU membership is open to permanent and precariously-employed workers, speciallyemployed workers (dependent contractors), unemployed, dismissed and retired workers, union staff and potential workers preparing to enter the labour market.\n\nKPTU is the largest industrial affiliate of the Korean Confederation of Trade Unions, and represents workers in a broad range of occupations. Their membership covers (non-civil servant) workers in national and municipal public and administrative institutions and throughout the public sector and in related private sector jobs. Relevant industries and occupations include energy, social protection (National Pension Service, National Health Insurance Service), public research institutions, healthcare, public schools, economic and social organisations, professional and technical fields, arts and culture, the post and property services.\n\nThey also represent workers throughout the transport industry including in rail and metro systems, buses and taxis, road freight, logistics and delivery, aviation (airlines, airports) and ports and in care and social services including daycare and elderly and disabled care. KPTU is working to realise fundamental labour rights for our members and all workers and fighting at the forefront of the movement for progressive transformation of Korean society. As the representative of South Korean public sector workers, they seek to expand public services and good jobs and eradicate precarious employment.", "iso_3166_1": "KR" }, "geometry": { "type": "Point", "coordinates": [ 126.86312986300004, 37.547555190000026 ] } },
+                    { "type": "Feature", "properties": { "id": 60, "Name": "Korean Confederation of Trade Unions", "Acronym": "KCTU ", "Jurisdiction": "National Centre", "Area_of_representation": "South Korea", "Country_HQ_Located": "South Korea", "City_HQ_Located": "Seoul", "lat": 37.568352367364, "long": 126.969993704432, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d93996a53f0f8bac7dee_KCTU.gif", "Sector": "National Centre", "Website": "https://nodong.org/about", "About": "The Korean Confederation of Trade Unions (KCTU), literally translated as National Confederation of Democratic Trade Unions, also known as Minju-nochong (Korean: 민주노총; an acronym for \"KCTU\" in Korean), is a national trade union centre in South Korea officially established in 1995. Its predecessor was the National Council of Trade Unions (NCTU), established in 1990 as an independent, democratically operated alternative to the Federation of Korean Trade Unions.", "iso_3166_1": "KR" }, "geometry": { "type": "Point", "coordinates": [ 126.969993704000103, 37.568352367000045 ] } },
+                    { "type": "Feature", "properties": { "id": 61, "Name": "Union des Travailleurs de Mauritanie", "Acronym": "UTM ", "Jurisdiction": "National Centre", "Area_of_representation": "Mauritania", "Country_HQ_Located": "Mauritania", "City_HQ_Located": "Nouakchott\n", "lat": 18.086427, "long": -15.9753404, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d988c3ca7dcf5ada522f_utm.jpg", "Sector": "National Centre", "Website": "https://www.ituc-africa.org/Union-des-Travailleurs-de.html?lang=fr", "About": "The Union of Mauritanian Workers (UTM) is a national trade union center in Mauritania. It was formed in 1961, and was the sole trade union center until the 1990s. It is affiliated with the International Trade Union Confederation (ITUC).", "iso_3166_1": "MR" }, "geometry": { "type": "Point", "coordinates": [ -15.975340399999936, 18.086427 ] } },
+                    { "type": "Feature", "properties": { "id": 62, "Name": "Sindicato Mexicano de Electricistas", "Acronym": "SME", "Jurisdiction": "National Union", "Area_of_representation": "Mexico", "Country_HQ_Located": "Mexico", "City_HQ_Located": "Mexico City", "lat": 19.434547544880299, "long": -99.156873317271405, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5162c71787ae1c8893c0_%5Bunionsforenergydemocracy.org%5DSME-Logo-1.png", "Sector": "Energy - Electricity", "Website": "https://www.sme.org.mx/", "About": "The Sindicato Mexicano de Electricistas (SME) is a Mexican union made up of workers of the company Luz y Fuerza del Centro, retired workers, commissioned and aspiring members. It was officially founded on December 14, 1914 by a group of electrical workers of Mexican Light and Power, telephone workers, private electricians and electrical workers of said transnational company.", "iso_3166_1": "MX" }, "geometry": { "type": "Point", "coordinates": [ -99.156873316999963, 19.434547545000044 ] } },
+                    { "type": "Feature", "properties": { "id": 63, "Name": "Unión Nacional de Técnicos y Profesionistas Petroleros", "Acronym": "UNTYPP", "Jurisdiction": "National Union", "Area_of_representation": "Mexico", "Country_HQ_Located": "Mexico", "City_HQ_Located": "Mexico City", "lat": 19.4443883, "long": -99.1329341, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5017c52cbd63844ccf96_%5Bunionsforenergydemocracy.org%5D%5B679%5Duntypp.png", "Sector": "Energy - Hydrocarbon", "Website": "https://untypp.org/", "About": "The Unión Nacional de Técnicos y Profesionistas Petroleros (National Union of Oil Technicians and Professionals, UNTyPP) are PEMEX workers who perform activities as Technicians and Professionals. \nThe UNTyPP is recognized by PEMEX as a union. ", "iso_3166_1": "MX" }, "geometry": { "type": "Point", "coordinates": [ -99.132934099999943, 19.444388300000071 ] } },
+                    { "type": "Feature", "properties": { "id": 64, "Name": "Organização dos Trabalhadores de Moçambique", "Acronym": "OTM-CS", "Jurisdiction": "National Centre", "Area_of_representation": "Mozambique ", "Country_HQ_Located": "Mozambique", "City_HQ_Located": "Maputo", "lat": -25.953425325599099, "long": 32.594050217729901, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/638626bafda414167ad32fd0_Logo%20-%20OTM-CS%20-%20Helder%20Consolo.png", "Sector": "National Centre", "Website": "https://projects.ituc-csi.org/otm?lang=en", "About": "The Mozambique Workers’ Organization (Organização dos Trabalhadores de Moçambique)(OTM) is a national trade union center in Mozambique.\n\nThe OTM was formed in 1983 and has a membership of 250 000.", "iso_3166_1": "MZ" }, "geometry": { "type": "Point", "coordinates": [ 32.594050218000064, -25.953425325999945 ] } },
+                    { "type": "Feature", "properties": { "id": 65, "Name": "Trade Union Congress of Namibia", "Acronym": "TUCNA", "Jurisdiction": "National Centre", "Area_of_representation": "Namibia", "Country_HQ_Located": "Namibia", "City_HQ_Located": "Windhoek", "lat": -22.5700061, "long": 17.0835461, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63861be5d39d1b4d60044660_IMG%20TUCNA%20logo%20-%20M.A.R%20Kavihuha.png", "Sector": "National Centre", "Website": "https://www.facebook.com/p/Trade-Union-Congress-of-Namibia-TUCNA-100072327523021/", "About": "The Trade Union Congress of Namibia (TUCNA) is one of three national trade union centres in Namibia. TUCNA was formed as a merger between the Namibia Federation of Trade Unions (NAFTU) and the Namibia People’s Social Movement (NPSM) in May 2002. TUCNA has 13 affiliated member unions (2017).", "iso_3166_1": "NA" }, "geometry": { "type": "Point", "coordinates": [ 17.083546100000035, -22.570006099999944 ] } },
+                    { "type": "Feature", "properties": { "id": 66, "Name": "The General Federation of Nepalese Trade Unions", "Acronym": "GEFONT", "Jurisdiction": "National Centre", "Area_of_representation": "Nepal", "Country_HQ_Located": "Nepal", "City_HQ_Located": "Kathmandu (P82C+XJH, Kathmandu 44600, Nepal)", "lat": 27.702627956639901, "long": 85.321701727111702, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f7edd20f5fe64ffe19d_%5Bunionsforenergydemocracy.org%5D%5B492%5DGEFONT-logo.png", "Sector": "National Centre", "Website": "https://www.gefont.org/", "About": "General Federation of Nepalese Trade Unions (GEFONT) was established on 20th July 1989. As there was no union right in Nepal; GEFONT was launched underground. GEFONT has 21 affiliates (as of April 2022), which cover all three fields- agriculture, industries and services; covering various sectors such as manufacturing, textiles and clothing, carpet industry, transport, hotels, restaurants and catering, tourism, ICT, media and printing, auto-mechanics, e-rikshaw, food production, breweries, chemical and metal industry, tea plantations, street vendors, private school, beauticians, employees of security sector and sports sector, construction and agriculture. As the largest trade union Confederation in Nepal, GEFONT represents nearly 449,766 workers from all affiliates. Over 40% of women have been elected in the National Executive Committee of GEFONT from its 8th National Congress. GEFONT is one the founders of the international trade union body- the International Trade Union Confederation (ITUC) established in November 2006. GEFONT affiliates are affiliated with various Global Union Federations (GUFs).", "iso_3166_1": "NP" }, "geometry": { "type": "Point", "coordinates": [ 85.321701727000061, 27.702627957000061 ] } },
+                    { "type": "Feature", "properties": { "id": 67, "Name": "UNI Global Union - Nepal", "Acronym": "UNI NEPAL", "Jurisdiction": "National Union", "Area_of_representation": "Nepal", "Country_HQ_Located": "Nepal", "City_HQ_Located": "Kathmandu", "lat": 27.694147872573101, "long": 85.320691270791002, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4ef3e4ce43566cfcaeef_%5Bunionsforenergydemocracy.org%5D%5B270%5DUNI-Nepal-logo.png", "Sector": "Other", "Website": "https://uninepal.org.np/", "About": "UNI Nepal represents 150K+ workers from Nepal. With a focus on solidarity and collaboration, UNI Nepal is playing an instrumental role in creating a more equitable and just world for workers.", "iso_3166_1": "NP" }, "geometry": { "type": "Point", "coordinates": [ 85.31933417649407, 27.685203527167978,  ] } },
+                    { "type": "Feature", "properties": { "id": 68, "Name": "First Union New Zealand", "Acronym": "FIRST UNION NZ", "Jurisdiction": "National Union", "Area_of_representation": "New Zealand (Aotearoa)", "Country_HQ_Located": "New Zealand", "City_HQ_Located": "Hamilton", "lat": -37.785371627043297, "long": 175.27605921004999, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f77fe442d4f7301431c_%5Bunionsforenergydemocracy.org%5D%5B479%5DFirst-Union-NZ-logo.png", "Sector": "Diverse", "Website": "https://www.firstunion.org.nz/", "About": "FIRST Union is a union of over 30,000 members across New Zealand in sectors including retail, finance, transport, logistics, manufacturing, and ambulance. ", "iso_3166_1": "NZ" }, "geometry": { "type": "Point", "coordinates": [ 175.276059210000085, -37.785371626999961 ] } },
+                    { "type": "Feature", "properties": { "id": 69, "Name": "New Zealand Public Service Association Te Pūkenga Here Tikanga Mahi", "Acronym": "PSA", "Jurisdiction": "National Union", "Area_of_representation": "New Zealand (Aotearoa)", "Country_HQ_Located": "New Zealand", "City_HQ_Located": "Wellington", "lat": -41.2810050956571, "long": 174.774319641413, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a504e21371b6332db0353_%5Bunionsforenergydemocracy.org%5D%5B756%5DPSA-NZ-300dpi-400x275-1.jpg", "Sector": "Public Services", "Website": "https://www.psa.org.nz/", "About": "PSA represents and supports more than 90,000 workers across central government, state-owned enterprises, local councils, health boards and community groups within Aotearoa New Zealand.", "iso_3166_1": "NZ" }, "geometry": { "type": "Point", "coordinates": [ 174.774319641000034, -41.281005095999944 ] } },
+                    { "type": "Feature", "properties": { "id": 70, "Name": "Unite (New Zealand - Aotearoa)", "Acronym": "UNITE NZ", "Jurisdiction": "National Union", "Area_of_representation": "New Zealand (Aotearoa)", "Country_HQ_Located": "New Zealand", "City_HQ_Located": "Auckland", "lat": -36.872185606523303, "long": 174.74395444815801, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f5faa7a5b0d45583558_%5Bunionsforenergydemocracy.org%5D%5B451%5DUNITE-NZ-logo.png", "Sector": "Retail", "Website": "https://www.unite.org.nz/", "About": "In mid 2003 a small group of trade unionists and activists attempted to \"organise the unorganised\". Unite is a trade union for hospitality workers in Aotearoa - New Zealand. Represented sector include: Call Centres, Casinos, Cinemas, Fast Food, Hotels, Restaurants, and Cafes & Bars", "iso_3166_1": "NZ" }, "geometry": { "type": "Point", "coordinates": [ 174.743954448000068, -36.872185606999949 ] } },
+                    { "type": "Feature", "properties": { "id": 71, "Name": "Union des Syndicats des Travailleurs du Niger", "Acronym": "USTN", "Jurisdiction": "National Centre", "Area_of_representation": "Niger", "Country_HQ_Located": "Niger", "City_HQ_Located": "Niamey", "lat": 13.5186518, "long": 2.1147102, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6386214315ce859c04d0c95e_logo%20ustn%202%20-%20Alain%20Adikan.jpg", "Sector": "National Centre", "Website": "https://www.ituc-africa.org/Union-des-Syndicats-des-Travailleurs-du-Niger-USTN.html", "About": "The Union of Workers' Trade Unions of Niger (USTN) is a national trade union center in Niger. Formed in 1960 as the Union Nationale des Travailleurs du Niger (UNTN), the union was renamed in 1978 as the USTN. The USTN is affiliated with the International Trade Union Confederation, and the Organization of African Trade Union Unity.", "iso_3166_1": "NE" }, "geometry": { "type": "Point", "coordinates": [ 2.114710200000047, 13.518651800000043 ] } },
+                    { "type": "Feature", "properties": { "id": 72, "Name": "National Union of Electricity Employees ", "Acronym": "NUEE", "Jurisdiction": "National Union", "Area_of_representation": "Nigeria", "Country_HQ_Located": "Nigeria", "City_HQ_Located": "Lagos", "lat": 6.5074042823782703, "long": 3.37602213027575, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6489ee2786bd537a71317e90_Nigeria%20NUEE.png", "Sector": "Energy - Electricity", "Website": "https://www.world-psi.org/en/national-union-electricity-employees-nigeria-nuee", "About": "The National Union of Electricity Employees (NUEE) is a trade union representing utilities workers in Nigeria. The union was founded in 1977 as the National Union of Electricity and Gas Workers, when the Government of Nigeria merged six unions of the sector. ", "iso_3166_1": "NG" }, "geometry": { "type": "Point", "coordinates": [ 3.376022130000024, 6.507404282000039 ] } },
+                    { "type": "Feature", "properties": { "id": 73, "Name": "Nordic Transport Workers' Federation ", "Acronym": "NTF", "Jurisdiction": "Regional Body", "Area_of_representation": "Nordic Countries", "Country_HQ_Located": "Sweden", "City_HQ_Located": "Stockholm", "lat": 59.33648616456, "long": 18.057120070858101, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5140775a87d447bf29db_%5Bunionsforenergydemocracy.org%5DNTF-Logo.jpg", "Sector": "Transport", "Website": "https://www.nordictransport.org/en/", "About": "NTF was founded back in 1908 with the goal of uniting the Nordic transport workers’ trade unions. Today, NTF is a federation of 41 different trade unions for transport workers in Finland, Norway, Sweden, Iceland and Denmark with the Faroe Islands.", "iso_3166_1": "SE" }, "geometry": { "type": "Point", "coordinates": [ 18.057120071000043, 59.336486165000053 ] } },
+                    { "type": "Feature", "properties": { "id": 74, "Name": "El og IT Forbundet - Electrician and IT Workers' Union", "Acronym": "ELOGIT", "Jurisdiction": "National Union", "Area_of_representation": "Norway", "Country_HQ_Located": "Norway", "City_HQ_Located": "Oslo", "lat": 59.9154127939604, "long": 10.749781782527201, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fe2d242c2380fc8d4bf_%5Bunionsforenergydemocracy.org%5D%5B599%5DELogIT-logo.png", "Sector": "Energy - Electricity", "Website": "https://elogit.no/english/", "About": "The Electrician and IT Workers' Union is a trade union in Norway. The union was formed by the 1999 merger of the Norwegian Union of Electricians and Power Station Workers, and the Norwegian Telecommunication and Data Workers' Union.", "iso_3166_1": "NO" }, "geometry": { "type": "Point", "coordinates": [ 10.794720688945423, 59.8944409507144 ] } },
+                    { "type": "Feature", "properties": { "id": 75, "Name": "Fagforbundet", "Acronym": "NUMGE", "Jurisdiction": "National Union", "Area_of_representation": "Norway", "Country_HQ_Located": "Norway", "City_HQ_Located": "Oslo", "lat": 59.915615293979997, "long": 10.7375405649694, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5146530c575dd74d61cb_%5Bunionsforenergydemocracy.org%5DNUMGE-logo.jpg", "Sector": "Diverse", "Website": "https://www.fagforbundet.no/", "About": "Fagforbundet is the largest union in Norway, and a part of LO (The Norwegian Confederation of Trade Unions). Their members work in the public sector, in local and county government and in hospitals, as well as in the private sector. they also organise apprentices and students.", "iso_3166_1": "NO" }, "geometry": { "type": "Point", "coordinates": [ 10.737540565000074, 59.915615294000077 ] } },
+                    { "type": "Feature", "properties": { "id": 76, "Name": "Federación de Trabajadores del Agua Potable y Alcantarillado ", "Acronym": "FENTAP", "Jurisdiction": "National Union", "Area_of_representation": "Peru", "Country_HQ_Located": "Peru", "City_HQ_Located": "Lima", "lat": -12.0534423191374, "long": -77.099769661464293, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50a128f77678d585d8f3_%5Bunionsforenergydemocracy.org%5D%5B892%5DFENTAP-logo-2.png", "Sector": "Public Services", "Website": "https://fentap.org.pe/", "About": "", "iso_3166_1": "PE" }, "geometry": { "type": "Point", "coordinates": [ -77.099769660999982, -12.053442318999942 ] } },
+                    { "type": "Feature", "properties": { "id": 77, "Name": "Kilusang Mayo Uno (May First Movement)", "Acronym": "KMU", "Jurisdiction": "National Centre", "Area_of_representation": "Philippines", "Country_HQ_Located": "Philippines", "City_HQ_Located": "Quezon City", "lat": 14.633870199205001, "long": 121.059712833936, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4e976830f7300054766b_%5Bunionsforenergydemocracy.org%5D%5B213%5DKMU-logo.png", "Sector": "Diverse", "Website": "https://kilusangmayouno.com/", "About": "Kilusang Mayo Uno (KMU) is an independent labour center promoting genuine, militant and patriotic trade unionism.", "iso_3166_1": "PH" }, "geometry": { "type": "Point", "coordinates": [ 121.059712834000038, 14.633870199000057 ] } },
+                    { "type": "Feature", "properties": { "id": 78, "Name": "Sentro ng mga Nagkakaisa at Progresibong Manggagawa", "Acronym": "SENTRO", "Jurisdiction": "National Centre", "Area_of_representation": "Philippines", "Country_HQ_Located": "Philippines", "City_HQ_Located": "Quezon City", "lat": 14.6061048, "long": 120.9802713, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f38fe442d4ddb013fcf_%5Bunionsforenergydemocracy.org%5D%5B425%5DSentro-logo.png", "Sector": "National Centre", "Website": "https://sentrolabor.wordpress.com/", "About": "SENTRO or Sentro ng mga Nagkakaisa at Progresibong Manggagawa was formally established when it held its founding congress August of 2013. Representing at least 80,000 members in the private, public and informal sectors, including migrant workers, women and the youth, SENTRO is committed to take social movement unionism (SMU) to new heights by intensifying the organizing of industry and sectoral unions in the country. \nThe founding members of SENTRO are the Alliance of Filipino Workers (AFW); APL; APL- Youth; Federation and Cooperation of Cola, Beverage and Allied Industry Unions (FCCU); KAMAO; League of Independent Bank Organizations (LIBO); Mariners’ Association for Regional and International Networking Organization (MARINO); National Alliance of Broadcast Unions (NABU); National Confederation of Transportworkers’ Unions (NCTU); National Union of Workers in Hotel, Restaurant and Allied Industries (NUWHRAIN); Philippine Independent Public Sector Employees Association (PIPSEA); Philippine Metalworkers’ Alliance (PMA); Pinag-isang Tinig at Lakas ng Anakpawis (PIGLAS); Postal Employees’ Union of the Philippines (PEUP); Progressive Labor Union in Hong Kong (PLU); and Workers’ Solidarity Network (WSN).\nSENTRO is an affiliate of ITUC.", "iso_3166_1": "PH" }, "geometry": { "type": "Point", "coordinates": [ 120.980271300000027, 14.606104800000026 ] } },
+                    { "type": "Feature", "properties": { "id": 79, "Name": "The Union de Trabajadores de la Industria Eléctrica y Riego ", "Acronym": "UTIER", "Jurisdiction": "National Union", "Area_of_representation": "Puerto Rico", "Country_HQ_Located": "Puerto Rico", "City_HQ_Located": "San Juan", "lat": 18.453226470497199, "long": -66.079707050338897, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a505433f1a997abf696de_%5Bunionsforenergydemocracy.org%5D%5B793%5Dutier-logo.png", "Sector": "Energy - Electricity", "Website": "https://www.utier.net/", "About": "La Union de Trabajadores de la Industria Eléctrica y Riego (UTIER) is one of the unions representing workers of the Puerto Rico Electric Power Authority. The union was founded on May 3, 1942 in San Juan, Puerto Rico.", "iso_3166_1": "PR" }, "geometry": { "type": "Point", "coordinates": [ -66.079707049999968, 18.453226470000061 ] } },
+                    { "type": "Feature", "properties": { "id": 80, "Name": "Scottish Trades Union Congress", "Acronym": "STUC", "Jurisdiction": "National Centre", "Area_of_representation": "Scotland", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "Glasgow", "lat": 55.872712000248903, "long": -4.2790134600318197, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e1589cc06741f339e56_%5Bunionsforenergydemocracy.org%5D%5B162%5DSTUC-logo.jpg", "Sector": "National Centre", "Website": "https://www.stuc.org.uk/", "About": "Founded in 1897, the Scottish Trades Union Congress is the national trade union centre in Scotland. With 40 affiliated unions as of 2020, the STUC represents over 540,000 trade unionists.", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ -4.279013459999931, 55.872712 ] } },
+                    { "type": "Feature", "properties": { "id": 81, "Name": "Union Démocratique des Travailleurs du Sénégal ", "Acronym": "UDTS", "Jurisdiction": "National Centre", "Area_of_representation": "Senegal", "Country_HQ_Located": "Senegal", "City_HQ_Located": "Dakar", "lat": 14.726583481403599, "long": -17.452171970121999, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/638785d6433a7c3c8d6d8c09_logo%20UDTSenegal.jpg", "Sector": "National Centre", "Website": "https://www.facebook.com/p/Union-D%C3%A9mocratique-des-Travailleurs-du-S%C3%A9n%C3%A9gal-100069264877245/", "About": "The Democratic Union of Senegalese Workers (UDTS) is a large independent union. It represents workers in the fields of transportation, security, and fisheries/canning industries.", "iso_3166_1": "SN" }, "geometry": { "type": "Point", "coordinates": [ -17.452171969999938, 14.726583481000034 ] } },
+                    { "type": "Feature", "properties": { "id": 82, "Name": "Nation Union of Metalworkers of South Africa \nSOUTH AFRICA", "Acronym": "NUMSA", "Jurisdiction": "National Union", "Area_of_representation": "South Africa", "Country_HQ_Located": "South Africa", "City_HQ_Located": "Johannesburg", "lat": -26.202404716459601, "long": 28.0455851610532, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5152dd20f572cbfff0c5_%5Bunionsforenergydemocracy.org%5DNUMSA-logo.jpg", "Sector": "Industry / Manufacturing", "Website": "https://numsa.org.za/", "About": "Numsa is the biggest metalworkers trade union in South Africa with more than 339,570 members (as at January 2014). Formed in 1987, it merged five different unions, some of whom had formed in the 1960s and 1970s. So Numsa brings a wealth of experience to trade unionism. It is the biggest trade union (except in Eskom) in all national bargaining forums where it bargains.", "iso_3166_1": "ZA" }, "geometry": { "type": "Point", "coordinates": [ 28.045585161000076, -26.202404715999933 ] } },
+                    { "type": "Feature", "properties": { "id": 83, "Name": "South African Federation of Trade Unions", "Acronym": "SAFTU", "Jurisdiction": "National Centre", "Area_of_representation": "South Africa", "Country_HQ_Located": "South Africa", "City_HQ_Located": "Johannesburg", "lat": -26.233135681651898, "long": 28.056662665629101, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a507a4d9fe9005dc5eccf_%5Bunionsforenergydemocracy.org%5D%5B857%5DSAFTU-logo.png", "Sector": "National Centre", "Website": "https://saftu.org.za/", "About": "The South African Federation of Trade Unions (SAFTU) is a trade union federation in South Africa. It was founded in 2017, and is the second largest of the country's main trade union confederations, with 21 affiliated trade unions organising 800,000 workers", "iso_3166_1": "ZA" }, "geometry": { "type": "Point", "coordinates": [ 28.056662666000079, -26.233135681999954 ] } },
+                    { "type": "Feature", "properties": { "id": 84, "Name": "Svenska Transportarbetareförbundet (Swedish Transport Workers' Union)", "Acronym": "STWU", "Jurisdiction": "National Union", "Area_of_representation": "Sweden", "Country_HQ_Located": "Sweden", "City_HQ_Located": "Stockholm", "lat": 59.324127204007397, "long": 18.066300168534401, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e32f8acefd00577e6e2_%5Bunionsforenergydemocracy.org%5D%5B171%5DSTWU-logo.png", "Sector": "Transport", "Website": "https://www.transport.se/", "About": "The Swedish Transport Workers' Union (Svenska Transportarbetareförbundet, Transport) is a trade union representing workers in the transport industry in Sweden. There are 30 local chapters around Sweden. Their headquarters are in Stockholm. As of 2020, they had 57,000 members in many different fields, such as dockyard, newspaper delivery, advertisement distributors, auto mobile towing, tire shops, gas stations, airport personnel, road transport, and security workers.", "iso_3166_1": "SE" }, "geometry": { "type": "Point", "coordinates": [ 18.066300169000044, 59.324127204000035 ] } },
+                    { "type": "Feature", "properties": { "id": 85, "Name": "Unia the Union", "Acronym": "UNIA", "Jurisdiction": "National Union", "Area_of_representation": "Switzerland", "Country_HQ_Located": "Switzerland", "City_HQ_Located": "Bern", "lat": 46.937537430099901, "long": 7.4764258637419996, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f31e668559a89be0d14_%5Bunionsforenergydemocracy.org%5D%5B413%5DUNIA-logo.jpg", "Sector": "Private Sector", "Website": "https://unia.swiss/", "About": "Unia is the largest trade union in Switzerland. It organises employees in the following sectors of the Swiss private economy: industrial, craft, construction and services. It collectively represents the interests of all employees and offers its members individual advice, legal protection and further services. It also operates the largest unemployment fund in Switzerland. Unia is a member of the Swiss Federation of Trade Unions. Unia has nearly 180,000 members. It is organised in 13 regions with 25 sections and has 71 local offices. Unia has signed 250 collective labour agreements, from which some 1.3 million workers benefit.", "iso_3166_1": "CH" }, "geometry": { "type": "Point", "coordinates": [ 7.476425864000021, 46.937537430000077 ] } },
+                    { "type": "Feature", "properties": { "id": 86, "Name": "The Netherlands Trade Union Confederation", "Acronym": "FNV", "Jurisdiction": "National Centre", "Area_of_representation": "Netherlands", "Country_HQ_Located": "Netherlands", "City_HQ_Located": "Utrecht", "lat": 52.114130697165102, "long": 5.0658318859274196, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f98aa7a5bf4ee5839e0_%5Bunionsforenergydemocracy.org%5D%5B524%5DFNV-logo.png", "Sector": "National Centre", "Website": "https://www.fnv.nl/mondiaal-fnv", "About": "", "iso_3166_1": "NL" }, "geometry": { "type": "Point", "coordinates": [ 5.065831886000069, 52.114130697000064 ] } },
+                    { "type": "Feature", "properties": { "id": 87, "Name": "Oilfields Workers' Trade Union", "Acronym": "OWTU", "Jurisdiction": "National Union", "Area_of_representation": "Trinidad and Tobago", "Country_HQ_Located": "Trinidad and Tobago", "City_HQ_Located": "San Fernando", "lat": 10.285561404810201, "long": -61.452501536353999, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a500dfe442d121c014d95_%5Bunionsforenergydemocracy.org%5D%5B651%5DOWTU-logo.jpg", "Sector": "Energy - Hydrocarbon", "Website": "http://archive.owtu.org/", "About": "The Oilfields Workers’ Trade Union (OWTU) was born out of the General Strike which started on June 19th, 1937 in the oilfields of south Trinidad. ", "iso_3166_1": "TT" }, "geometry": { "type": "Point", "coordinates": [ -61.452501535999943, 10.285561405000067 ] } },
+                    { "type": "Feature", "properties": { "id": 88, "Name": "Amalgamated Transport and General Workers' Union", "Acronym": "ATGWU", "Jurisdiction": "National Union", "Area_of_representation": "Uganda", "Country_HQ_Located": "Uganda", "City_HQ_Located": "Kajjansi", "lat": 0.22014807621896401, "long": 32.545442267231799, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a50d82af4dd67ba4c8525_%5Bunionsforenergydemocracy.org%5DATGWU-logo.jpg", "Sector": "Transport", "Website": "https://www.atgwu.org/", "About": "Amalgamated Transport and General Workers' Union (ATGWU) is an autonomous, democratic and voluntary organisation formed, owned funded and run by workers in accordance with its constitution.", "iso_3166_1": "UG" }, "geometry": { "type": "Point", "coordinates": [ 32.545442267000055, 0.220148076000044 ] } },
+                    { "type": "Feature", "properties": { "id": 89, "Name": "Uganda Electricity and Allied Workers Union", "Acronym": "UEAWU", "Jurisdiction": "National Union", "Area_of_representation": "Uganda", "Country_HQ_Located": "Uganda", "City_HQ_Located": "?", "lat": 0.324789, "long": 32.580652, "Region": "Africa", "Logo": "", "Sector": "Energy - Electricity", "Website": "", "About": "", "iso_3166_1": "UG" }, "geometry": { "type": "Point", "coordinates": [ 32.580652, 0.324789 ] } },
+                    { "type": "Feature", "properties": { "id": 90, "Name": "Fire Bigrades Union", "Acronym": "FBU", "Jurisdiction": "National Union", "Area_of_representation": "United Kingdom", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "Kingston upon Thames", "lat": 51.4126339634198, "long": -0.28621947561948302, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a510b01813731fa229044_%5Bunionsforenergydemocracy.org%5DFBU-logo.png", "Sector": "Public Services", "Website": "https://www.fbu.org.uk/", "About": "The Fire Brigades Union is a trade union in the United Kingdom for wholetime firefighters, retained firefighters and emergency control room staff.", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ -0.286219475999928, 51.412633963000076 ] } },
+                    { "type": "Feature", "properties": { "id": 91, "Name": "Public and Commercial Services Union", "Acronym": "PCS", "Jurisdiction": "National Union", "Area_of_representation": "United Kingdom", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "London", "lat": 51.467132917190398, "long": -0.169553988978286, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fa22af4ddc09b4c717e_%5Bunionsforenergydemocracy.org%5D%5B528%5DPCS-logo.png", "Sector": "Public Services", "Website": "https://www.pcs.org.uk/", "About": "Founded in 1998 through a merger, the Public and Commercial Services Union (PCS) is the eighth largest trade union in the United Kingdom. Most of its members work in UK government departments and other public bodies.", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ -0.169553988999951, 51.467132917000072 ] } },
+                    { "type": "Feature", "properties": { "id": 92, "Name": "UNISON", "Acronym": "UNISON", "Jurisdiction": "National Union", "Area_of_representation": "United Kingdom", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "London", "lat": 51.530137697460802, "long": -0.123875352637349, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f864d9fe97f7cc5e06e_%5Bunionsforenergydemocracy.org%5D%5B492%5DUNISON-logo.jpg", "Sector": "Public Services", "Website": "https://www.unison.org.uk/", "About": "Unison is a British trade union. Along with Unite, Unison is one of the two largest trade unions in the United Kingdom, with over 1.2 million members who work predominantly in public services, including local government, education, health and outsourced services.", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ -0.12387535299996, 51.530137697000043 ] } },
+                    { "type": "Feature", "properties": { "id": 93, "Name": "UNITE UK", "Acronym": "UNITE UK", "Jurisdiction": "National Union", "Area_of_representation": "United Kingdom", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "London", "lat": 51.514874204712598, "long": 0.040656694231693803, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a517b4d9fe91b33c5ffa5_%5Bunionsforenergydemocracy.org%5DUnite-UK-logo.jpg", "Sector": "Industry / Manufacturing", "Website": "\twww.unitetheunion.org", "About": "Unite the Union, commonly known as Unite, is a British and Irish trade union which was formed on 1 May 2007 by the merger of Amicus and the Transport and General Workers' Union. Unite is one of the two largest trade unions in the UK, with over 1.2 million members in construction, manufacturing, transport, logistics and other sectors", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ 0.040656694000063, 51.514874205000069 ] } },
+                    { "type": "Feature", "properties": { "id": 94, "Name": "Transport Salaried Staffs' Association", "Acronym": "TSSA", "Jurisdiction": "National Union", "Area_of_representation": "United Kingdom and Ireland", "Country_HQ_Located": "United Kingdom", "City_HQ_Located": "London", "lat": 51.557136686936097, "long": -0.037843716740910902, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e4a89cc066d1f33a106_%5Bunionsforenergydemocracy.org%5D%5B193%5DTSSA-logo.jpg", "Sector": "Transport", "Website": "https://www.tssa.org.uk/", "About": "The Transport Salaried Staffs' Association (TSSA) is a trade union for workers in the transport and travel industries in the United Kingdom and Ireland. Its head office is in London, and it has regional offices in Bristol, Derby, Dublin, York and Glasgow.\n\nTSSA has approximately 18,000 members in the UK and Ireland. While principally a union for people in the railway industry, the effect of the nationalisation and subsequent privatisations following the Second World War has meant that it has members working for railway companies, shipping companies, bus companies, travel agencies, airlines, call centres, and IT companies.", "iso_3166_1": "GB" }, "geometry": { "type": "Point", "coordinates": [ -0.03784371699993, 51.557136687000082 ] } },
+                    { "type": "Feature", "properties": { "id": 95, "Name": "1199 SEIU UNITED HEALTHCARE WORKERS EAST", "Acronym": "1199 SEIU UNITED HEALTHCARE WORKERS EAST", "Jurisdiction": "Local Union ", "Area_of_representation": "East Coast United States: Massachusetts, New York, New Jersey, Maryland, Florida, and Washington, DC, ", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Hartford", "lat": 41.760447822802497, "long": -72.646517119497204, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279db0cd40a868740f856e_%5Bunionsforenergydemocracy.org%5D1199SEIU-logo.jpg", "Sector": "Health", "Website": "http://www.1199seiu.org/", "About": "Founded in 1932, 1199SEIU United Healthcare Workers East is a healthcare local union within the Service Employees International Union.With over 450,000 members throughout Massachusetts, New York, New Jersey, Maryland, Florida, and Washington, DC, 1199SEIU is the largest healthcare union in the US.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -72.646517118999952, 41.76044782300005 ] } },
+                    { "type": "Feature", "properties": { "id": 96, "Name": "Rutgers AAUP-AFT (American Federation of Teachers, AFL-CIO)", "Acronym": "AAUP AFT", "Jurisdiction": "Local Union ", "Area_of_representation": "Rutgers University", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Newark", "lat": 40.501726880362099, "long": -74.447216698051307, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a506264185583a7e38a82_%5Bunionsforenergydemocracy.org%5D%5B797%5DAAUP-AFT-logo.png", "Sector": "Education", "Website": "https://rutgersaaup.org/", "About": "Rutgers AAUP-AFT represents more than 5,000 full-time faculty, graduate workers, postdoctoral associates, and EOF counselors at the state university’s three main campuses and beyond. Our union is one of the oldest higher ed unions in the country, negotiating collective bargaining agreements for full-time faculty since 1970 and graduate workers since 1972.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -74.447216697999977, 40.501726880000035 ] } },
+                    { "type": "Feature", "properties": { "id": 97, "Name": "American Federation of State, County and Municipal Employees District Council 57", "Acronym": "AFSCME District Council 57", "Jurisdiction": "Local Union ", "Area_of_representation": "United States", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Oakland", "lat": 37.731935688807297, "long": -122.20558598417701, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4fe9d242c25c19c8d580_%5Bunionsforenergydemocracy.org%5D%5B606%5DAFSCME-Council-57-logo.jpg", "Sector": "Public Services", "Website": "https://www.afscme.org/", "About": "The American Federation of State, County and Municipal Employees (AFSCME) is the largest trade union of public employees in the United States. It represents 1.3 million public sector employees and retirees, including health care workers, corrections officers, sanitation workers, police officers, firefighters, and childcare providers. Founded in Madison, Wisconsin, in 1932, AFSCME is part of the AFL–CIO, one of the two main labor federations in the United States.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -122.205585983999981, 37.731935689000068 ] } },
+                    { "type": "Feature", "properties": { "id": 98, "Name": "UCONN University and the Graduate Employee Union", "Acronym": "GEU UAW", "Jurisdiction": "Local Union", "Area_of_representation": "University of Connecticut", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Storrs", "lat": 41.8070146185065, "long": -72.251484651887097, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5119099f147f37dd5e15_%5Bunionsforenergydemocracy.org%5Dgeu-uaw-logo.jpg", "Sector": "Education", "Website": "https://www.uconngradunion.org/", "About": "Beginning in 2013, graduate employees at UConn decided to unionize due to stagnant wages, increasing workloads, and increasing student fees. They are a member-run, member-led union fighting for the rights of graduate employees and postdocs at the University of Connecticut.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -72.251484651999988, 41.807014619000029 ] } },
+                    { "type": "Feature", "properties": { "id": 99, "Name": "The Union for Graduate Employees at New York University", "Acronym": "GSOC UAW LOCAL 2110", "Jurisdiction": "Local Union", "Area_of_representation": "New York University", "Country_HQ_Located": "United States of America", "City_HQ_Located": "New York City", "lat": 40.739022069220397, "long": -73.990546175568099, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5123d242c25b87c8f107_%5Bunionsforenergydemocracy.org%5DGSOC-UAW-Local-2110.png", "Sector": "Education", "Website": "https://makingabetternyu.org/", "About": "GSOC (Graduate Student Organizing Committee) is the union of graduate employees at New York University. Drawing from a membership of several thousand across most of NYU’s graduate schools, they represent over 2,000 graduate workers in any given semester who are teaching assistants, adjunct instructors, social science research assistants, and graduate assistants. They are affiliated with Local 2110 of the United Auto Workers and are the first recognized union of graduate employees at a private university in the United States.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -73.990546175999953, 40.739022069000043 ] } },
+                    { "type": "Feature", "properties": { "id": 100, "Name": "IBEW Local 11", "Acronym": "IBEW Local 11", "Jurisdiction": "Local Union", "Area_of_representation": "Los Angeles", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Los Angeles", "lat": 34.049219260336997, "long": -118.231986472233, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e09978cc43101456683_%5Bunionsforenergydemocracy.org%5D%5B150%5DIBEW-Local-11-logo.png", "Sector": "Energy - Electricity", "Website": "https://www.ibew11.org/", "About": "IBEW Local Union 11 is the dynamic and progressive voice of the Electrical Construction Industry in Los Angeles. We are a movement for social justice, safe jobsites, training, green jobs and opportunity for all based in Los Angeles, California. IBEW 11 represents our 12,000 Electricians, Communications and Systems Installers, Transportation Systems Journeyman, Civil Service Electricians, Apprentices, Construction Wireman and Construction Electricians.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -118.23198647199996, 34.049219260000029 ] } },
+                    { "type": "Feature", "properties": { "id": 101, "Name": "Local 3, International Brotherhood of Electrical Workers", "Acronym": "IBEW", "Jurisdiction": "Local Union ", "Area_of_representation": "Queens, New York City", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Queens, New York City", "lat": 40.734231217546601, "long": -73.803463181429606, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5131d242c2c7f9c8f2f4_%5Bunionsforenergydemocracy.org%5DIBEW-Local-3-logo.jpg", "Sector": "Energy - Electricity", "Website": "https://www.ibew.org/", "About": "The International Brotherhood of Electrical Workers (IBEW) is a labor union that represents approximately 820,000 workers and retirees[1] in the electrical industry in the United States, Canada,[3] Guam,[4][5] Panama,[6] Puerto Rico,[7] and the US Virgin Islands;[7] in particular electricians, or inside wiremen, in the construction industry and lineworkers and other employees of public utilities. The union also represents some workers in the computer, telecommunications, and broadcasting industries, and other fields related to electrical work.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -73.803463180999984, 40.734231218000048 ] } },
+                    { "type": "Feature", "properties": { "id": 102, "Name": "The National Education Association ", "Acronym": "NEA", "Jurisdiction": "National Union", "Area_of_representation": "United States", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Washington D.C.", "lat": 38.907703992505297, "long": -77.035786962132605, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4ed7e4ce435c1cfcade3_%5Bunionsforenergydemocracy.org%5D%5B242%5DNEA-logo.png", "Sector": "Education", "Website": "https://www.nea.org/", "About": "NEA has affiliate organizations in every state and in more than 14,000 communities across the United States. We bring the expertise, drive, and dedication of 3 million educators and allies to advancing justice and excellence in public education.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -77.05469517530237, 38.91861862244198 ] } },
+                    { "type": "Feature", "properties": { "id": 103, "Name": "The New England Joint Board UNITE HERE \n", "Acronym": "NEJB", "Jurisdiction": "Regional Body", "Area_of_representation": "New England", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Boston", "lat": 42.357227942962503, "long": -71.058808672415793, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f15018137498d227ac1_%5Bunionsforenergydemocracy.org%5D%5B320%5DNEJB-300x155-1.png", "Sector": "Diverse", "Website": "https://www.nejb.us/", "About": "The Northeast’s Textile, Garment, Manufacturing, Warehouse, Laundry, Human Services, and Hospitality Workers Union. The New England Joint Board UNITE HERE is a union representing workers in the textile, garment, manufacturing, warehousing, laundry, human service, and hospitality industries in New England and New York. Our thousands of members are as diverse as the industries they work in. Women make up a large portion of our membership as do new immigrants and people of color.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -71.058808671999941, 42.357227943000055 ] } },
+                    { "type": "Feature", "properties": { "id": 104, "Name": "National Nurses United", "Acronym": "NNU", "Jurisdiction": "National Union", "Area_of_representation": "United States", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Oakland", "lat": 37.829565673454297, "long": -122.282581187232, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f42e4ce4394f9fcb944_%5Bunionsforenergydemocracy.org%5D%5B427%5DNNU-logo.png", "Sector": "Health", "Website": "https://www.nationalnursesunited.org/", "About": "National Nurses United, with nearly 225,000 members nationwide, is the largest union and professional association of registered nurses in U.S. history.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -122.282581186999948, 37.829565673000047 ] } },
+                    { "type": "Feature", "properties": { "id": 105, "Name": "New York State Nurses Association ", "Acronym": "NYSNA", "Jurisdiction": "Local Union ", "Area_of_representation": "New York State", "Country_HQ_Located": "United States of America", "City_HQ_Located": "New York City", "lat": 40.6834032045006, "long": -73.977086562334506, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f6d4d9fe9d907c5dfe9_%5Bunionsforenergydemocracy.org%5D%5B470%5DNYSNA-logo.jpg", "Sector": "Health", "Website": "https://www.nysna.org/", "About": "The New York State Nurses Association is a union of 42,000 frontline nurses united together for strength at work, our practice, safe staffing, and healthcare for all. We are New York's largest union and professional association for registered nurses.  ", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -73.977086561999954, 40.683403205000047 ] } },
+                    { "type": "Feature", "properties": { "id": 106, "Name": "Pennsylvania Federation Brotherhood of Maintenance of Way Employees Division-International Brotherhood of Teamsters ", "Acronym": "PENN BMWED", "Jurisdiction": "Local Union ", "Area_of_representation": "Pennsylvania", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Philadelphia", "lat": 39.945942437420698, "long": -75.179841240281604, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a502350c5e31fd40613df_%5Bunionsforenergydemocracy.org%5D%5B721%5DPenn-Fed-BMWED-logo.png", "Sector": "Transport", "Website": "https://www.bmwe.org/default.aspx", "About": "", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -75.179841239999973, 39.945942437000042 ] } },
+                    { "type": "Feature", "properties": { "id": 107, "Name": "The Professional Staff Congress at the City University of New York and the CUNY Research Foundation. ", "Acronym": "PSC CUNY", "Jurisdiction": "Local Union ", "Area_of_representation": "New York City", "Country_HQ_Located": "United States of America", "City_HQ_Located": "New York City", "lat": 40.7638105158765, "long": -73.9750359540038, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4f20a64d722209a620ac_%5Bunionsforenergydemocracy.org%5D%5B368%5DPSC-CUNY-logo.jpg", "Sector": "Education", "Website": "https://psc-cuny.org/", "About": "The Professional Staff Congress is the union that represents 30000 faculty and staff at the City University of New York and the CUNY Research Foundation.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -73.975035953999964, 40.763810516000035 ] } },
+                    { "type": "Feature", "properties": { "id": 108, "Name": "Service Employees International Union (SEIU)  Local 1021", "Acronym": "SEIU LOCAL 1021", "Jurisdiction": "Local Union ", "Area_of_representation": "Northern California", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Oakland", "lat": 37.804725027887002, "long": -122.27803818707901, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a4ffd099f149e1edd4d5e_%5Bunionsforenergydemocracy.org%5D%5B640%5DSEIU-Local-1021.png", "Sector": "Diverse", "Website": "https://www.seiu1021.org/", "About": "SEIU Local 1021 represents over 54000 employees in local governments, non-profit agencies, health care programs and schools throughout Northern CA.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -122.278038187, 37.804725028000064 ] } },
+                    { "type": "Feature", "properties": { "id": 109, "Name": "United Electrical, Radio and Machine Workers of America", "Acronym": "UE", "Jurisdiction": "National Union", "Area_of_representation": "United States", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Pittsburg", "lat": 40.4319445, "long": -80.001931299999896, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a516f21371b1bdddb0ccc_%5Bunionsforenergydemocracy.org%5DUE-logo.png", "Sector": "Other", "Website": "https://www.ueunion.org/", "About": "The USA's only national, independent, membership-run union (since 1936). “UE” is the abbreviation for United Electrical, Radio and Machine Workers of America, a democratic national union representing tens of thousands of workers in a wide variety of manufacturing, public sector and private service-sector jobs. UE is an independent union (not affiliated with the AFL-CIO) proud of its democratic structure and progressive policies.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -80.001931299999967, 40.431944500000043 ] } },
+                    { "type": "Feature", "properties": { "id": 110, "Name": "Service Employees International Union, Local 32BJ,", "Acronym": "32BJ SEIU", "Jurisdiction": "Local Union ", "Area_of_representation": "US Northeast ", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Boston", "lat": 42.331906, "long": -71.0719595, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e1c3dca23727b344d45_%5Bunionsforenergydemocracy.org%5D%5B164%5D32BJ-SEIU-logo-1.png", "Sector": "Diverse", "Website": "https://www.seiu32bj.org/about-us/", "About": "Service Employees International Union, Local 32BJ, is a branch of Service Employees International Union headquartered in New York City which mainly represents building workers and has about 175,000 members in ten northeastern states, Washington, D.C., Florida and other parts of the United States. 32BJ represents primarily cleaners, property maintenance workers, doormen, security officers, window cleaners, building engineers, and school and food service workers (but ranks include railroad and factory workers as well).", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -71.071959499999934, 42.331906 ] } },
+                    { "type": "Feature", "properties": { "id": 111, "Name": "The Amalgamated Transit Union", "Acronym": "ATU", "Jurisdiction": "National Union", "Area_of_representation": "United States and Canada", "Country_HQ_Located": "United States of America", "City_HQ_Located": "Washington D.C.", "lat": 38.9014952, "long": -77.0113644, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/63279e3b409aa3765f84eec4_%5Bunionsforenergydemocracy.org%5D%5B177%5DATU-logo.jpg", "Sector": "Transport", "Website": "https://atu.org/", "About": "The Amalgamated Transit Union (ATU) is a labor organization in the United States and Canada that represents employees in the public transit industry. Established in 1892 as the Amalgamated Association of Street Railway Employees of America, the union was centered primarily in the Eastern United States; today, ATU has over 200,000 members throughout the United States and Canada.", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -77.011364399999934, 38.901495200000056 ] } },
+                    { "type": "Feature", "properties": { "id": 112, "Name": "UNITE HERE", "Acronym": "UNITE HERE", "Jurisdiction": "Regional Body", "Area_of_representation": "United States and Canada", "Country_HQ_Located": "United States of America", "City_HQ_Located": "New York City", "lat": 40.721561749727599, "long": -73.995717543616905, "Region": "North America", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/632a5173018137a833229191_%5Bunionsforenergydemocracy.org%5DUNITE-Here-logo.jpg", "Sector": "Retail", "Website": "https://unitehere.org/", "About": "UNITE HERE is a labor union in the United States and Canada with roughly 300,000 active members. The union's members work predominantly in the hotel, food service, laundry, warehouse, and casino gaming industries. ", "iso_3166_1": "US" }, "geometry": { "type": "Point", "coordinates": [ -73.995717543999945, 40.721561750000035 ] } },
+                    { "type": "Feature", "properties": { "id": 113, "Name": "Agrupación UTE", "Acronym": "AUTE", "Jurisdiction": "National Union", "Area_of_representation": "Uruguay", "Country_HQ_Located": "Uruguay", "City_HQ_Located": "Montevideo", "lat": -34.886643557553903, "long": -56.191323145394499, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6440212f426f01991ca69841_AUTE.png", "Sector": "Energy - Electricity", "Website": "https://www.aute.org.uy/", "About": "La agrupación UTE (AUTE) que nuclea a los trabajadores de la UTE fue fundada el lunes 4 de abril de 1949. En 2021 contaba con aproximadamente 4000 personas afiliadas y tiene una personería jurídica y las elecciones se realizan cada dos años.", "iso_3166_1": "UY" }, "geometry": { "type": "Point", "coordinates": [ -56.191323144999956, -34.886643557999946 ] } },
+                    { "type": "Feature", "properties": { "id": 114, "Name": "Tunisian General Labor Union", "Acronym": "UGTT", "Jurisdiction": "National Centre", "Area_of_representation": "Tunisia ", "Country_HQ_Located": "Tunisia", "City_HQ_Located": "Tunis ", "lat": 36.801718653482403, "long": 10.178635253213599, "Region": "Africa", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670ca4744b76f4d7100e912_Union_G%C3%A9n%C3%A9rale_Tunisienne_du_Travail_logo.svg.png", "Sector": "Diverse", "Website": "https://www.ugtt.org.tn/", "About": "The Tunisian General Labour Union (UGTT) is a national trade union center.It has a membership of more than one million and was founded January 20, 1946. The UGTT is affiliated with the International Trade Union Confederation and the Arab Trade Union Confederation.", "iso_3166_1": "TN" }, "geometry": { "type": "Point", "coordinates": [ 10.178635253000039, 36.80171865300008 ] } },
+                    { "type": "Feature", "properties": { "id": 115, "Name": "Fédération nationale des mines et de l'énergie", "Acronym": " FNME-CGT", "Jurisdiction": "National Union", "Area_of_representation": "France", "Country_HQ_Located": "France", "City_HQ_Located": "Paris", "lat": 48.854422645768601, "long": 2.41572180333708, "Region": "Europe", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670cca689eb8a0d012216e1_images.png", "Sector": "Energy - Other", "Website": "https://www.fnme-cgt.fr/", "About": "The National Federation of Mines and Energy (FNME-CGT) is the result of the union between the National Federation of Underground Workers CGT (FNTSS-CGT) and the National Energy Federation CGT (FNE-CGT). Its creation was ratified during the Grenoble congress in 1999.\n\nThe new national federation of mines and energy CGT (FNME-CGT) brings together employees of mines, the electricity and gas industries, the atomic energy sector and related subsidiaries. They represent around 1 million employees.", "iso_3166_1": "FR" }, "geometry": { "type": "Point", "coordinates": [ 2.415721803000054, 48.854422646000046 ] } },
+                    { "type": "Feature", "properties": { "id": 116, "Name": "The Bukluran ng Manggagawang Pilipino", "Acronym": "BMP", "Jurisdiction": "National Centre", "Area_of_representation": "Philippines", "Country_HQ_Located": "Philippines", "City_HQ_Located": "Pasig", "lat": 14.5719724573069, "long": 121.079577361213, "Region": "Asia and the Pacific", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670cd9d57be01d6dfeb5be6_BMP_bullslogo.jpg", "Sector": "National Centre", "Website": "https://www.facebook.com/manggagawangpilipino/", "About": "The Bukluran ng Manggagawang Pilipino or Solidarity of Filipino Workers (BMP) is a national center of militant workers and trade unions in the Philippines. It comprises 200 local unions nationwide with a mass membership of over 100,000 laborers. BMP was established on 2 September 1993 as the Bukluran ng Manggagawa para sa Pagbabago (Solidarity of Workers for Change).", "iso_3166_1": "PH" }, "geometry": { "type": "Point", "coordinates": [ 121.07957736100002, 14.571972457000072 ] } },
+                    { "type": "Feature", "properties": { "id": 117, "Name": "Sindicato Nacional de Servidores Públicos del Sector Minero Energético", "Acronym": "SINTRAMINERALES ", "Jurisdiction": "National Union", "Area_of_representation": "Colombia", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Bogotá", "lat": 4.677847210809937, "long": -74.13163740683063, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d0299dda2cbeee9bc46d_IMG_2686%20-%20Sindicato%20Nacional%20Sintraminerales.jpeg", "Sector": "Energy - Mining", "Website": "https://x.com/sintraminerales?lang=en", "About": "", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -74.13163740683063, 4.677847210809937] } },
+                    { "type": "Feature", "properties": { "id": 118, "Name": "Sindicato Unitario Nacional de Trabajadores del Estado", "Acronym": "SUNET", "Jurisdiction": "National Union", "Area_of_representation": "Colombia", "Country_HQ_Located": "Colombia", "City_HQ_Located": "Bogotá", "lat": 4.631405351315216, "long": -74.13834539649763, "Region": "Latin America and the Caribbean", "Logo": "https://uploads-ssl.webflow.com/63276dc4e6b803208bf159df/6670d66578360f04237784e3_Diseno-sin-titulo-1.png", "Sector": "Public Services", "Website": "https://sunet.co/", "About": "", "iso_3166_1": "CO" }, "geometry": { "type": "Point", "coordinates": [ -74.139759, 4.632110 ] } }
+                ]
+            };
+
+
+            // LOAD THE MAP FUNCTION
+            map.on('load', function() {
+
+                // Optionally open the initial panel on map load
+                document.getElementById('initial-panel').classList.add('open');
+                
+                // Add the vector source for country boundaries
+                map.addSource('admin-0', { // Changed source name to 'country-boundaries'
+                    'type': 'vector',
+                    'url': 'mapbox://mapbox.country-boundaries-v1', // Changed URL to new source
+                    'promoteId': 'mapbox_id'
+                });
+
+
+                // Define a filter for international worldview boundaries
+                let worldviewFilter = [
+                    "any",
+                    ["==", "all", ["get", "worldview"]]
+                ];
+
+                map.addLayer({
+                    id: 'countries-layer',
+                    type: 'fill',
+                    source: 'admin-0',
+                    'source-layer': 'country_boundaries',
+                    layout: {},
+                    paint: {
+                        'fill-color': '#FFBD59',
+                        'fill-opacity': [
+                            'match',
+                            ['get', 'iso_3166_1'],
+                            ['AR', 'IN', 'PH', 'GR', 'KE'], 0.23, // Lower opacity for specific countries
+                            0.5 // Default opacity for other countries
+                        ]
+                    },
+                    filter: [
+                        'all',
+                        ['in', 'iso_3166_1', ...Array.from(getUniqueCountries(unions.features))],
+                    ]
+                });
+
+
+
+                // LOAD THE UNIONS
+                map.addSource('unions', {
+                    type: 'geojson',
+                    data: unions,
+                    cluster: true,
+                    clusterMaxZoom: 7, // Max zoom level to cluster
+                    clusterRadius: 42 // Radius of each cluster when clustering points
+                });
+
+                // Add the union cluster circles
+                map.addLayer({
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'unions',
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-color': [
+                            'step',
+                            ['get', 'point_count'],
+                            '#858585', 5,
+                            '#474747', 10,
+                            '#000000'
+                        ],
+                        'circle-radius': [
+                            'step',
+                            ['get', 'point_count'],
+                            20, 100,
+                            30, 750,
+                            40
+                        ]
+                    }
+                });
+
+                 // Add the number on the cluster circles
+                map.addLayer({
+                    id: 'cluster-count',
+                    type: 'symbol',
+                    source: 'unions',
+                    layout: {
+                        'text-field': '{point_count_abbreviated}',
+                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                        'text-size': 12
+                    },
+                    paint: {
+                        'text-color': 'white'
+                    }
+                });
+
+                // Add individual union points
+                map.addLayer({
+                    id: 'unclustered-point',
+                    type: 'circle',
+                    source: 'unions',
+                    filter: ['!', ['has', 'point_count']],
+                    paint: {
+                        'circle-color': '#bd2130',
+                        'circle-radius': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            1.5, 5,  // Radius at zoom level 1.5
+                            7, 10    // Radius at zoom level 7
+                        ],
+                        'circle-stroke-width': 0
+
+                    }
+                });
+
+                // Invisible clickable layer
+                map.addLayer({
+                    id: 'unclustered-point-clickable',
+                    type: 'circle',
+                    source: 'unions',
+                    filter: ['!', ['has', 'point_count']],
+                    paint: {
+                        'circle-color': 'white',
+                        'circle-opacity': 0,  // Make the layer invisible
+                        'circle-radius': 15,  // Larger radius for easier clicking
+                        'circle-stroke-width': 0
+                    }
+                });
+
+
+                // Code for click and zoom on clusters
+                map.on('click', 'clusters', function(e) {
+                    var features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                    if (!features.length) {
+                        return;
+                    }
+
+                    const targetZoom = 10; // Set your target max click zoom level
+                    const currentZoom = map.getZoom();
+
+                    if (currentZoom < targetZoom) {
+                        map.easeTo({
+                            center: e.lngLat,
+                            zoom: Math.min(currentZoom + 2, targetZoom)
+                        });
+                    }
+                });
+
+              
+
+                // Setup popup for hover effects
+                const popup = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false
+                    });
+
+                    map.on('mouseenter', 'unclustered-point', (e) => {
+                        map.getCanvas().style.cursor = 'pointer';
+
+                        const coordinates = e.features[0].geometry.coordinates.slice();
+                        const properties = e.features[0].properties;
+
+                        // Ensure the popup appears over the correct location
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+
+                        const descriptionHTML = `
+                        <div style="text-align: center; font-size: 22px; margin-bottom: 8px;">
+                            <strong>${properties.Acronym || ""}</strong>
+                        </div>
+                        <div style="text-align: center; font-size: 16px;">
+                            ${properties.Name || ""}
+                        </div>
+                        `;
+                        popup.setLngLat(coordinates).setHTML(descriptionHTML).addTo(map);
+                    });
+
+                    map.on('mouseleave', 'unclustered-point-clickable', () => {
+                        map.getCanvas().style.cursor = '';
+                        popup.remove();
+                    });
+                // End of hover code
+
+
+                // Toggle panels if not click on feature
+                map.on('click', function(e) {
+                    // Query the map to see if any features are present at the click location
+                    var features = map.queryRenderedFeatures(e.point, { layers: ['clusters', 'unclustered-point-clickable'] });
+
+                    // Check if any features are found
+                    if (features.length === 0) {
+                        // Check if both panels are currently closed
+                        const isInitialPanelOpen = document.getElementById('initial-panel').classList.contains('open');
+                        const isSidePanelOpen = document.getElementById('side-panel').classList.contains('open');
+
+                        if (!isInitialPanelOpen && !isSidePanelOpen) {
+                            // If both panels are closed, specifically open the initial panel
+                            document.getElementById('initial-panel').classList.add('open');
+                        } else {
+                            // Otherwise, toggle the initial panel as before
+                            togglePanel();
+                        }
+                    }
+                });
+
+
+                // start side panel code
+                map.on('click', 'unclustered-point-clickable', function(e) {
+                    const properties = e.features[0].properties;
+
+                    // Populate the side panel with data from the clicked feature
+                    document.getElementById('union-acronym').textContent = properties.Acronym;
+                    document.getElementById('union-name').textContent = properties.Name;
+                    document.getElementById('union-logo').src = properties.Logo;
+                    document.getElementById('union-jurisdiction').textContent = properties.Jurisdiction;
+                    document.getElementById('union-sector').textContent = properties.Sector;
+                    document.getElementById('union-area_of_representation').textContent = properties.Area_of_representation;
+                    document.getElementById('union-region').textContent = properties.Region;
+                    document.getElementById('union-description').textContent = properties.About;
+                    document.getElementById('union-link').href = properties.Website;
+
+                    // This will open the side panel and ensure the initial panel is closed
+                    togglePanel('side-panel');
+
+                    // Open the side panel
+                    document.getElementById('side-panel').classList.add('open');
+                });
+
+                // Populate dropdowns after the map loads and the source is set
+                populateDropdowns(unions);
+                
+                // Sets up event listeners for dropdown interactions
+                setupDropdownEventListeners();  
+
+
+
+            });         // CLOSES THE MAP LOAD FUNCTION
+
+
+            // Close the initial panel
+            document.querySelector('#initial-panel .close-panel').addEventListener('click', function() {
+                document.getElementById('initial-panel').classList.remove('open');
+            });
+
+            // Close the side panel
+            document.querySelector('#side-panel .close-panel').addEventListener('click', function() {
+                document.getElementById('side-panel').classList.remove('open');
+            });
+
+            // Navigator controls
+            map.addControl(new mapboxgl.NavigationControl(), 'top-left');  
+
+            ////////////////// FUNCTIONS
+
+            //toggle panels
+            function togglePanel(panelId) {
+                const panels = ['initial-panel', 'side-panel']; // List of all panel IDs
+                panels.forEach(pid => {
+                    const panel = document.getElementById(pid);
+                    if (pid === panelId) {
+                        // If this is the panel we want to open, and it's not already open
+                        if (!panel.classList.contains('open')) {
+                            panel.classList.add('open');
+                        }
+                    } else {
+                        // Ensure all other panels are closed
+                        panel.classList.remove('open');
+                    }
+                });
+            }
+
+            // Function to populate dropdown menus with sorted options
+            function populateDropdowns(unions) {
+                const addOptions = (selectId, options) => {
+                    const dropdown = $('#' + selectId);
+                    dropdown.empty(); // Clear existing options first
+                    dropdown.append('<li><a class="dropdown-item" data-value="All" href="#">All</a></li>');
+                    
+                    // Convert Set to Array, sort it alphabetically, and append each option
+                    Array.from(options).sort().forEach(option => {
+                        dropdown.append(`<li><a class="dropdown-item" data-value="${option}" href="#">${option}</a></li>`);
+                    });
+                };
+
+                addOptions('jurisdiction_select', new Set(unions.features.map(feature => feature.properties.Jurisdiction)));
+                addOptions('sector_select', new Set(unions.features.map(feature => feature.properties.Sector)));
+                addOptions('region_select', new Set(unions.features.map(feature => feature.properties.Region)));
+            }
+
+            // ## Modified filterGeoJSON function to use filters ##
+            function filterGeoJSON() {
+                let selectedJurisdiction = $('#selectedJurisdictionLabel').text();
+                let selectedSector = $('#selectedSectorLabel').text();
+                let selectedRegion = $('#selectedRegionLabel').text();
+
+                // Filter union points
+                let filteredFeatures = unions.features.filter(feature => {
+                    return (selectedJurisdiction === 'All' || feature.properties.Jurisdiction === selectedJurisdiction) &&
+                        (selectedSector === 'All' || feature.properties.Sector === selectedSector) &&
+                        (selectedRegion === 'All' || feature.properties.Region === selectedRegion);
+                });
+
+                let filteredGeoJSON = {
+                    "type": "FeatureCollection",
+                    "features": filteredFeatures
+                };
+
+                map.getSource('unions').setData(filteredGeoJSON);
+
+                // ## Filter countries layer using Mapbox filters ##
+                const unionCountries = getUniqueCountries(filteredFeatures);
+
+                const filterExpression = [
+                    'all',
+                    ['in', 'iso_3166_1', ...Array.from(unionCountries)],
+                ];
+
+                map.setFilter('countries-layer', filterExpression);
+
+                // Update the paint property for conditional opacity
+                map.setPaintProperty('countries-layer', 'fill-opacity', [
+                    'match',
+                    ['get', 'iso_3166_1'],
+                    ['AR', 'IN', 'PH', 'GR', 'KE'], 0.25, // Lower opacity for specific countries
+                    0.5 // Default opacity for other countries
+                ]);
+            }
+
+            // ## Helper function to get unique country ISO codes ##
+            function getUniqueCountries(features) {
+                return new Set(features.map(f => f.properties.iso_3166_1)); // Assuming the ISO codes are in a property named 'iso_3166_1'
+            }
+
+
+
+
+            // Event listeners for dropdown selections
+            function setupDropdownEventListeners() {
+                $('body').on('click', '.dropdown-menu a', function() {
+                    let selectedValue = $(this).data('value'); // Should capture the correct value from data-value attribute
+                    let parentDropdown = $(this).closest('.dropup');
+                    let labelToUpdate = parentDropdown.find('.h5'); // Ensure this selector matches your HTML structure
+
+                    labelToUpdate.text(selectedValue); // This updates the dropdown's visible label to the selected item's value
+
+                    filterGeoJSON(); // Trigger filtering
+                });
+            }
+
+
+
+
+
+
+        </script>
+    </body>   
+</html>
