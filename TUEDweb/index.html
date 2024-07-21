@@ -337,7 +337,103 @@
                 minZoom: 1.5,
                 maxZoom: 14
             });
+            
+////////////////////////////////////////////////////////////////////////////////
+    
+    // REPLACE ISRAEL WITH PALESTINE ON BASEMAP
 
+    // Function to remove labels from base map
+    map.on('style.load', function() {
+        // Function to remove a label by name
+        function removeLabel(label) {
+            map.getStyle().layers.forEach(function(layer) {
+                if (layer.type === 'symbol' && layer.layout['text-field']) {
+                    const filter = map.getFilter(layer.id);
+                    // Add the new filter condition
+                    const newFilter = filter ? ["all", filter, ["!=", 
+                        ["get", "name_en"], label]] : ["all", ["!=", 
+                        ["get", "name_en"], label]];
+                    map.setFilter(layer.id, newFilter);
+                }
+            });
+        }
+
+        // Remove each label individually
+        removeLabel("Israel");
+        removeLabel("Neot Hovav");
+        removeLabel("Dimona");
+        removeLabel("Sheizaf");
+        removeLabel("Yerucham");
+        removeLabel("Beersheba");
+        removeLabel("Avdat");
+        removeLabel("Arad");
+        removeLabel("Mitspe Ramon");
+        removeLabel("Be'er Milka");
+        removeLabel("Neot HaKikar");
+        removeLabel("Ein Hatseva");
+        removeLabel("Yevul");
+        removeLabel("Tel Aviv");
+        removeLabel("Rishon LeZion");
+        removeLabel("Amman");
+        removeLabel("Ashdod");
+        removeLabel("Petah Tikva");
+        removeLabel("Netanya");
+        removeLabel("Arraba");
+        removeLabel("Safed");
+        removeLabel("Shittim");
+        removeLabel("Qiryat Ata");
+        removeLabel("Nahariyya");
+        removeLabel("Haifa");
+        removeLabel("Beer Ora");
+        removeLabel("Eilat");
+
+        
+        // Add a new custom label for Palestine 
+        const countryLabelLayer = map.getStyle().layers.find(layer =>
+            layer.type === 'symbol' && layer.layout['text-field'] 
+                && layer.id.includes('country')
+        );
+
+        if (countryLabelLayer) {
+            // Clone the layout to modify the text-size
+            const layout = Object.assign({}, countryLabelLayer.layout, {
+                "text-field": ["get", "name_en"],
+                "text-size": [
+                    "interpolate", ["linear"], ["zoom"],
+                    1, 11,  // Font size at zoom level 1
+                    5, 16,  // Font size at zoom level 5
+                    10, 20, // Font size at zoom level 10
+                    15, 24  // Font size at zoom level 15
+                ],
+                "visibility": "visible"
+            });
+
+            map.addLayer({
+                "id": `${countryLabelLayer.id}-palestine`,
+                "type": "symbol",
+                "source": {
+                    "type": "geojson",
+                    "data": {
+                        "type": "FeatureCollection",
+                        "features": [{
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [35, 32] 
+                            },
+                            "properties": {
+                                "name_en": "Palestine"
+                            }
+                        }]
+                    }
+                },
+                "layout": layout,
+                "paint": countryLabelLayer.paint
+            });
+        }
+    });
+
+////////////////////////////////////////////////////////////////////////////////
            
             // UNION GEOJSON
             const unions = {
