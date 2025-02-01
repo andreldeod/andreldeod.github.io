@@ -537,9 +537,22 @@
                     ]
                 },
                 filter: [
-                    'all',
-                    ['in', 'iso_3166_1', ...Array.from(getUniqueCountries(unions.features))],
+                    'in', 
+                    'iso_3166_1', 
+                    ''
                 ]
+            });
+
+            // After loading unions, update the filter
+            map.on('load', async function() {
+                unions = await loadExcelData('./ALL_TUED_UNIONS.xlsx');
+
+                const unionCountries = getUniqueCountries(unions.features);
+
+                map.setFilter('countries-layer', 
+                    ['in', 
+                    'iso_3166_1', 
+                    ...Array.from(unionCountries)]);
             });
 
 
