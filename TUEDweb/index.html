@@ -805,7 +805,7 @@
             addOptions('region_select', new Set(unions.features.map(feature => feature.properties.Region)));
         }
 
-        // ## Modified filterGeoJSON function to use filters ##
+        // Function to filter GeoJSON based on selected jurisdiction, sector, and region
         function filterGeoJSON() {
             let selectedJurisdiction = $('#selectedJurisdictionLabel').text();
             let selectedSector = $('#selectedSectorLabel').text();
@@ -823,20 +823,22 @@
                 "features": filteredFeatures
             };
 
+            // Update the unions source with the filtered data
             map.getSource('unions').setData(filteredGeoJSON);
 
-            // ## Filter countries layer using Mapbox filters ##
+            // Get unique country codes from the filtered features
             const unionCountries = getUniqueCountries(filteredFeatures);
 
             // Debugging: Check filtered country codes
-            console.log("Filtered Country Codes2:", unionCountries);
+            console.log("Filtered Country Codes:", unionCountries);
 
-            // const filterExpression = [
-            //     'all',
-            //     ['in', 'iso_3166_1', ...Array.from(unionCountries)],
-            // ];
+            // Construct the filter expression for the countries layer
+            const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
 
-            map.setFilter('countries-layer', filterExpression);
+            // Apply the filter to the countries layer
+            if (map.getLayer('countries-layer')) {
+                map.setFilter('countries-layer', filterExpression);
+            }
 
             // Update the paint property for conditional opacity
             map.setPaintProperty('countries-layer', 'fill-opacity', [
@@ -849,7 +851,7 @@
 
         // ## Helper function to get unique country ISO codes ##
         function getUniqueCountries(features) {
-            return new Set(features.map(f => f.properties.iso_3166_1)); // Assuming the ISO codes are in a property named 'iso_3166_1'
+            return new Set(features.map(f => f.properties.iso_3166_1).filter(code => code)); // Ensure codes are not undefined
         }
 
 
