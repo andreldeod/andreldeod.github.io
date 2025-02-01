@@ -503,6 +503,13 @@
             // First, load the Excel data. If your file is "myUnions.xlsx" in the same folder:
             unions = await loadExcelData('./ALL_TUED_UNIONS.xlsx');
 
+            // Extract country codes from the loaded data
+            const unionCountries = getUniqueCountries(unions.features);
+
+            // Debugging: Check if country codes are being extracted correctly
+            console.log("Union Country Codes:", unionCountries);
+
+
             // Optionally open the initial panel on map load
             document.getElementById('initial-panel').classList.add('open');
             
@@ -543,16 +550,14 @@
                 ]
             });
 
-            // After loading unions, update the filter
-            map.on('load', async function() {
-                unions = await loadExcelData('./ALL_TUED_UNIONS.xlsx');
-
-                const unionCountries = getUniqueCountries(unions.features);
-
-                map.setFilter('countries-layer', 
-                    ['in', 
-                    'iso_3166_1', 
-                    ...Array.from(unionCountries)]);
+            // Apply filter after ensuring the layer exists
+            map.on('idle', function () {
+                if (map.getLayer('countries-layer')) {
+                    console.log("Applying filter to countries-layer");
+                    map.setFilter('countries-layer', [
+                        'in', 'iso_3166_1', ...Array.from(unionCountries)
+                    ]);
+                }
             });
 
 
@@ -823,10 +828,13 @@
             // ## Filter countries layer using Mapbox filters ##
             const unionCountries = getUniqueCountries(filteredFeatures);
 
-            const filterExpression = [
-                'all',
-                ['in', 'iso_3166_1', ...Array.from(unionCountries)],
-            ];
+            // Debugging: Check filtered country codes
+            console.log("Filtered Country Codes2:", unionCountries);
+
+            // const filterExpression = [
+            //     'all',
+            //     ['in', 'iso_3166_1', ...Array.from(unionCountries)],
+            // ];
 
             map.setFilter('countries-layer', filterExpression);
 
