@@ -498,7 +498,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
         // LOAD THE MAP FUNCTION
-        map.on('load', function() {
+        map.on('load', async function() {
 
             // First, load the Excel data. If your file is "myUnions.xlsx" in the same folder:
             unions = await loadExcelData('./ALL_TUED_UNIONS.xlsx');
