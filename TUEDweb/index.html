@@ -305,7 +305,7 @@
                 <ul>
                     <li>Click on the points to learn more about individual unions.</li>
                     <li>Countries in yellow have at least one participating union.</li>
-                    <li>For more info click <a href="https://www.tuedglobal.org/participating-unions-and-allies" target="_blank">here</a>.</li>
+                    <li>For more info, click <a href="https://www.tuedglobal.org/participating-unions-and-allies" target="_blank">here</a>.</li>
                 </ul>
                 <img src="powerLines.png" alt="Descriptive Alt Text" class="full-width-image">
                 
@@ -319,7 +319,14 @@
             .align-items-center keeps them aligned vertically.     -->
             <div class="d-flex align-items-center w-100">
                 <!-- Union tally circle on the left -->
-                <span id="unionCountCircle" class="me-4">0</span>               
+                <span
+                id="unionCountCircle"
+                class="me-4"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Number of unions displayed on map"
+                >0
+                </span>              
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mb-2 mx-2 border-top border-dark shadow-sm">
                         <!-- Jurisdiction Dropdown -->
@@ -364,7 +371,7 @@
     <script>
         // MAPBOX TOKEN CODE
         mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmxkZW9kIiwiYSI6ImNsdjJ2M2QzZjBtbnMya253NjQ2MTFzZjYifQ.dowCB4gupvS5kSkrxky-wQ';
-    
+
         // BASEMAP
         const map = new mapboxgl.Map({
             container: 'map',
@@ -374,6 +381,14 @@
             zoom: 1.5,
             minZoom: 1.5,
             maxZoom: 14
+        });
+
+        // Enable Bootstrap tooltips site-wide:
+        var tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
             
 ////////////////////////////////////////////////////////////////////////////////
