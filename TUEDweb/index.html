@@ -488,7 +488,6 @@
                         }
                     }))
                 };
-                console.log("Loaded Union Data:", geojson.features);
                 return geojson;
             }
 
@@ -504,13 +503,6 @@
             // First, load the Excel data. If your file is "myUnions.xlsx" in the same folder:
             const timestamp = new Date().getTime(); // Add a unique timestamp to prevent caching
             unions = await loadExcelData(`./ALL_TUED_UNIONS.xlsx?t=${timestamp}`);
-
-            console.log("Union Data After Load:", unions.features.map(f => ({
-                Name: f.properties.Name, 
-                Sector: f.properties.Sector 
-            })));
-
-
 
             // Extract country codes from the loaded data
             const unionCountries = getUniqueCountries(unions.features);
@@ -559,7 +551,6 @@
             // Apply filter after ensuring the layer exists
             map.on('idle', function () {
                 if (map.getLayer('countries-layer')) {
-                    console.log("Applying filter to countries-layer");
                     map.setFilter('countries-layer', [
                         'in', 'iso_3166_1', ...Array.from(unionCountries)
                     ]);
@@ -738,7 +729,6 @@
                 document.getElementById('union-logo').src = properties.Logo;
                 document.getElementById('union-jurisdiction').textContent = properties.Jurisdiction;
                 document.getElementById('union-sector').textContent = properties.Sector;
-                console.log("Selected Union Sector:", properties.Sector);
                 document.getElementById('union-area_of_representation').textContent = properties.Area_of_representation;
                 document.getElementById('union-region').textContent = properties.Region;
                 document.getElementById('union-description').textContent = properties.About;
@@ -809,7 +799,6 @@
 
             addOptions('jurisdiction_select', new Set(unions.features.map(feature => feature.properties.Jurisdiction)));
             addOptions('sector_select', new Set(unions.features.map(feature => feature.properties.Sector)));
-            console.log("Extracted Sectors:", new Set(unions.features.map(feature => feature.properties.Sector)));
             addOptions('region_select', new Set(unions.features.map(feature => feature.properties.Region)));
         }
 
@@ -836,9 +825,6 @@
 
             // Get unique country codes from the filtered features
             const unionCountries = getUniqueCountries(filteredFeatures);
-
-            // // Debugging: Check filtered country codes
-            // console.log("Filtered Country Codes:", unionCountries);
 
             // Construct the filter expression for the countries layer
             const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
