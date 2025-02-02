@@ -501,13 +501,12 @@
         map.on('load', async function() {
 
             // First, load the Excel data. If your file is "myUnions.xlsx" in the same folder:
-            unions = await loadExcelData('./ALL_TUED_UNIONS.xlsx');
+            const timestamp = new Date().getTime(); // Add a unique timestamp to prevent caching
+            unions = await loadExcelData(`./ALL_TUED_UNIONS.xlsx?t=${timestamp}`);
+
 
             // Extract country codes from the loaded data
             const unionCountries = getUniqueCountries(unions.features);
-
-            // Debugging: Check if country codes are being extracted correctly
-            console.log("Union Country Codes:", unionCountries);
 
 
             // Optionally open the initial panel on map load
@@ -829,8 +828,8 @@
             // Get unique country codes from the filtered features
             const unionCountries = getUniqueCountries(filteredFeatures);
 
-            // Debugging: Check filtered country codes
-            console.log("Filtered Country Codes:", unionCountries);
+            // // Debugging: Check filtered country codes
+            // console.log("Filtered Country Codes:", unionCountries);
 
             // Construct the filter expression for the countries layer
             const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
