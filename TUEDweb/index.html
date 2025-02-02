@@ -323,6 +323,11 @@
                                 <!--  items will be added here dynamically -->
                             </ul>
                         </li>
+                        <!-- Add a new list item to show the number of unions -->
+                        <li class="nav-item my-auto ms-3">
+                            <!-- A simple <span> to display the count; initially "0" -->
+                            <span id="unionCount" style="font-size:1.25rem; font-weight:bold;">0</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -822,16 +827,20 @@
 
         // Function to filter GeoJSON based on selected jurisdiction, sector, and region
         function filterGeoJSON() {
+            //selecting the label texts
             let selectedJurisdiction = $('#selectedJurisdictionLabel').text();
             let selectedSector = $('#selectedSectorLabel').text();
             let selectedRegion = $('#selectedRegionLabel').text();
 
-            // Filter union points
+            // Filter the union points based on dropdown choices
             let filteredFeatures = unions.features.filter(feature => {
                 return (selectedJurisdiction === 'All' || feature.properties.Jurisdiction === selectedJurisdiction) &&
                     (selectedSector === 'All' || feature.properties.Sector === selectedSector) &&
                     (selectedRegion === 'All' || feature.properties.Region === selectedRegion);
             });
+
+            // Update the unionCount span to show how many unions match the filter
+            document.getElementById('unionCount').textContent = filteredFeatures.length;
 
             // Build a filtered GeoJSON
             let filteredGeoJSON = {
