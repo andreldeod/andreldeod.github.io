@@ -597,7 +597,7 @@
                 data: unions,
                 cluster: true,
                 clusterMaxZoom: 7, // Max zoom level to cluster
-                clusterRadius: 42 // Radius of each cluster when clustering points
+                clusterRadius: 25 // Radius of each cluster when clustering points
             });
 
             // Add the union cluster circles
@@ -687,7 +687,7 @@
                 if (currentZoom < targetZoom) {
                     map.easeTo({
                         center: e.lngLat,
-                        zoom: Math.min(currentZoom + 2, targetZoom)
+                        zoom: Math.min(currentZoom + 4, targetZoom)
                     });
                 }
             });
