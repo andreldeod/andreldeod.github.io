@@ -226,6 +226,23 @@
             opacity: 0.9 !important; /* Ensures the button is fully opaque */
         }
 
+        /*  Add a custom style for #unionCount so it has a fixed width and white background */
+        #unionCount {
+            /*  Make background white */
+            background-color: #FFFFFF;
+            /*  Match the color (#AA2130) and font of "PARTICIPATING UNIONS" */
+            color: #AA2130;
+            font-family: 'Bitter', serif;
+            font-size: 30px;
+            font-weight: bold;
+            /*  Ensure a fixed width that can fit up to 3 digits comfortably */
+            width: 80px;
+            text-align: center;
+            /*  Add subtle padding/border radius if you want a more “button-like” look */
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
         /* Additional styling to ensure dropdown menus are visible against the navbar */
         .dropdown-menu {
             background-color: white; /* Ensure dropdown menus are also opaque if needed */
@@ -326,7 +343,7 @@
                         <!-- Add a new list item to show the number of unions -->
                         <li class="nav-item my-auto ms-3">
                             <!-- A simple <span> to display the count; initially "0" -->
-                            <span id="unionCount" style="font-size:1.25rem; font-weight:bold;">0</span>
+                            <span id="unionCount">0</span>
                         </li>
                     </ul>
                 </div>
@@ -519,6 +536,8 @@
             // Extract country codes from the loaded data
             const unionCountries = getUniqueCountries(unions.features);
 
+            // COMMENT: Now set the count to the total number of unions
+            document.getElementById('unionCount').textContent = unions.features.length;
 
             // Optionally open the initial panel on map load
             document.getElementById('initial-panel').classList.add('open');
