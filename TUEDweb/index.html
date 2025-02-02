@@ -494,6 +494,8 @@
         // 2) Replace the old "const unions = {...}" with a variable
         let unions; // We'll store the Excel-based data here
 
+        let currentUnionCountries = new Set(); // We'll keep the latest ISO codes here
+
 // END OF NEW INSERT
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -503,6 +505,9 @@
             // First, load the Excel data. If your file is "myUnions.xlsx" in the same folder:
             const timestamp = new Date().getTime(); // Add a unique timestamp to prevent caching
             unions = await loadExcelData(`./ALL_TUED_UNIONS.xlsx?t=${timestamp}`);
+
+            // Extract country codes from the loaded data and store them globally
+            currentUnionCountries = getUniqueCountries(unions.features);
 
             // Extract country codes from the loaded data
             const unionCountries = getUniqueCountries(unions.features);
@@ -552,7 +557,7 @@
             map.on('idle', function () {
                 if (map.getLayer('countries-layer')) {
                     map.setFilter('countries-layer', [
-                        'in', 'iso_3166_1', ...Array.from(unionCountries)
+                        'in', 'iso_3166_1', ...Array.from(currentUnionCountries)
                     ]);
                 }
             });
@@ -815,6 +820,7 @@
                     (selectedRegion === 'All' || feature.properties.Region === selectedRegion);
             });
 
+            // Build a filtered GeoJSON
             let filteredGeoJSON = {
                 "type": "FeatureCollection",
                 "features": filteredFeatures
@@ -826,13 +832,23 @@
             // Get unique country codes from the filtered features
             const unionCountries = getUniqueCountries(filteredFeatures);
 
-            // Construct the filter expression for the countries layer
-            const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
+            // *** CRITICAL: Store that new set in our global variable ***
+            currentUnionCountries = unionCountries;
 
-            // Apply the filter to the countries layer
+            // Then directly apply the filter (as before)
             if (map.getLayer('countries-layer')) {
-                map.setFilter('countries-layer', filterExpression);
+                map.setFilter('countries-layer', [
+                    'in', 'iso_3166_1', ...Array.from(currentUnionCountries)
+                ]);
             }
+
+            // // Construct the filter expression for the countries layer
+            // const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
+
+            // // Apply the filter to the countries layer
+            // if (map.getLayer('countries-layer')) {
+            //     map.setFilter('countries-layer', filterExpression);
+            // }
 
             // Update the paint property for conditional opacity
             map.setPaintProperty('countries-layer', 'fill-opacity', [
