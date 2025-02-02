@@ -252,7 +252,9 @@
                 <button class="close-panel"> </button>
                 <h1 id="union-acronym"></h1>
                 <h2 id="union-name"></h2>
-                <img id="union-logo" src="" alt="Union Logo" />
+                <a id="union-logo-link" href="#" target="_blank">
+                    <img id="union-logo" src="" alt="Union Logo" />
+                  </a>                  
                 <ul class="union-details" style="margin-top: 5px;">
                     <li><strong>Jurisdiction:</strong> <span id="union-jurisdiction">N/A</span></li>
                     <li><strong>Area of representation:</strong> <span id="union-area_of_representation">N/A</span></li>
@@ -731,7 +733,18 @@
                 // Populate the side panel with data from the clicked feature
                 document.getElementById('union-acronym').textContent = properties.Acronym;
                 document.getElementById('union-name').textContent = properties.Name;
+                // Set the 'src' of the union logo image
                 document.getElementById('union-logo').src = properties.Logo;
+                // Get the anchor that wraps the union logo
+                const unionLogoLink = document.getElementById('union-logo-link');
+                // If there's a valid website, use it as the anchor href and allow clicking
+                if (properties.Website) {
+                    unionLogoLink.href = properties.Website;           // Use the union's website
+                    unionLogoLink.style.pointerEvents = 'auto';        // Enable pointer interaction
+                } else {
+                    unionLogoLink.href = '#';                          // Otherwise, no real link
+                    unionLogoLink.style.pointerEvents = 'none';        // Disable clicking
+                }
                 document.getElementById('union-jurisdiction').textContent = properties.Jurisdiction;
                 document.getElementById('union-sector').textContent = properties.Sector;
                 document.getElementById('union-area_of_representation').textContent = properties.Area_of_representation;
