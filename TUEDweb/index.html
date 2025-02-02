@@ -227,21 +227,30 @@
         }
 
         /*  Add a custom style for #unionCount so it has a fixed width and white background */
-        #unionCount {
-            /* Ensure it becomes a little rectangular "box" */
+        #unionCountCircle {
+            /* Make a perfect circle by matching width & height and using border-radius: 50% */
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+
+            /* White background (or partial transparency) */
+            background-color: rgba(255,255,255,0.9);
+
+            /* Center the text in that circle */
             display: inline-flex;
-            /* Center the text horizontally & vertically */
             align-items: center;
             justify-content: center;
-            /*  Make background white */
-            background-color: rgba(255, 255, 255, 0.9);
-            /*  Match the color (#AA2130) and font of "PARTICIPATING UNIONS" */
+
+            /* Style the text to match "PARTICIPATING UNIONS" color & font */
             color: #AA2130;
             font-family: 'Bitter', serif;
-            font-size: 43.5px;
+            font-size: 28px;  /* Adjust as desired */
             font-weight: bold;
-            /* Fixed dimensions so we get a consistent rectangle */
-            width: 85px;     /* Enough to fit a 3-digit number comfortably */
+
+            position: relative;  /* allow 'top' to work */
+            top: -15px; 
+            left: 10px;
+
         }
 
         /* Additional styling to ensure dropdown menus are visible against the navbar */
@@ -305,7 +314,12 @@
 
         <!-- DROPDOWN FILTER MENU PANEL-->
         <div class="navbar fixed-bottom navbar-expand-sm navbar-light bg-light">
-            <div class="container-fluid">
+            <div class="container-fluid">                    
+            <!--  The .d-flex class makes the inside items flow left-to-right.
+            .align-items-center keeps them aligned vertically.     -->
+            <div class="d-flex align-items-center w-100">
+                <!-- Union tally circle on the left -->
+                <span id="unionCountCircle" class="me-4">0</span>               
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mb-2 mx-2 border-top border-dark shadow-sm">
                         <!-- Jurisdiction Dropdown -->
@@ -341,12 +355,8 @@
                                 <!--  items will be added here dynamically -->
                             </ul>
                         </li>
-                        <!-- Add a new list item to show the number of unions -->
-                        <li class="nav-item d-flex align-items-center">
-                            <span id="unionCount">0</span>
-                        </li>
                     </ul>
-                </div>
+                </div> 
             </div>
         </div>
         
@@ -537,7 +547,7 @@
             const unionCountries = getUniqueCountries(unions.features);
 
             // COMMENT: Now set the count to the total number of unions
-            document.getElementById('unionCount').textContent = unions.features.length;
+            document.getElementById('unionCountCircle').textContent = unions.features.length;
 
             // Optionally open the initial panel on map load
             document.getElementById('initial-panel').classList.add('open');
@@ -859,7 +869,7 @@
             });
 
             // Update the unionCount span to show how many unions match the filter
-            document.getElementById('unionCount').textContent = filteredFeatures.length;
+            document.getElementById('unionCountCircle').textContent = filteredFeatures.length;
 
             // Build a filtered GeoJSON
             let filteredGeoJSON = {
@@ -882,14 +892,6 @@
                     'in', 'iso_3166_1', ...Array.from(currentUnionCountries)
                 ]);
             }
-
-            // // Construct the filter expression for the countries layer
-            // const filterExpression = ['in', 'iso_3166_1', ...Array.from(unionCountries)];
-
-            // // Apply the filter to the countries layer
-            // if (map.getLayer('countries-layer')) {
-            //     map.setFilter('countries-layer', filterExpression);
-            // }
 
             // Update the paint property for conditional opacity
             map.setPaintProperty('countries-layer', 'fill-opacity', [
